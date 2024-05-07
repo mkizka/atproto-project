@@ -11,7 +11,8 @@ function App() {
           .sampleMethod({
             actor: "mkizka.dev",
           })
-          .then(console.log);
+          .then(console.log)
+          .catch(console.error);
       }}
     >
       button

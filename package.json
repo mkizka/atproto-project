@@ -4,12 +4,22 @@
   "packageManager": "pnpm@9.1.0+sha256.22e36fba7f4880ecf749a5ca128b8435da085ecd49575e7fb9e64d6bf4fad394",
   "scripts": {
     "dev": "turbo dev",
-    "format": "prettier . -w"
+    "format": "prettier . -w && eslint . --fix",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@mkizka/eslint-config": "^4.2.0",
+    "@tsconfig/node20": "^20.1.4",
+    "eslint": "^9.2.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "prettier-plugin-pkg": "^0.18.1",
     "turbo": "^1.13.3"
+  },
+  "lint-staged": {
+    "*.{js,mjs,ts,tsx}": "eslint --fix",
+    "*": "prettier --ignore-unknown --write"
   },
   "prettier": {
     "printWidth": 100,

@@ -1,6 +1,6 @@
+import cors from "cors";
 import express from "express";
 import { createServer } from "lexicon/server";
-import cors from "cors";
 
 const server = createServer();
 
