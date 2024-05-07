@@ -1,11 +1,24 @@
 import express from "express";
-import { createServer } from "api";
+import { createServer } from "lexicon/server";
+import cors from "cors";
 
 const server = createServer();
 
 const app = express();
+app.use(cors());
 
 app.use(server.xrpc.router);
+server.dev.mkizka.sample.sampleMethod(() => {
+  console.log("sampleMethod called");
+  return {
+    encoding: "application/json",
+    body: {
+      foo: "bar",
+    },
+  };
+});
+
+
 // server.xrpc.method("foo.bar", () => {
 //   return {
 //     encoding: "application/json",

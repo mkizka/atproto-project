@@ -1,11 +1,19 @@
 {
-  "name": "api",
+  "name": "lexicon",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    "./server": {
+      "require": "./generated/server/index.ts",
+      "import": "./generated/server/index.ts",
+      "types": "./generated/server/index.ts"
+    },
+    "./api": {
+      "require": "./generated/api/index.ts",
+      "import": "./generated/api/index.ts",
+      "types": "./generated/api/index.ts"
+    }
+  },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
     "postinstall": "tsx ./scripts/generate.ts"
   },
   "dependencies": {
