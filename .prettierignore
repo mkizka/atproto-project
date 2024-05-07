@@ -1,4 +1,3 @@
-packages/api/src/api/
-packages/api/src/server/
+generated/
 atproto/
 pnpm-workspace.yaml

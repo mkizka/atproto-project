@@ -18,7 +18,6 @@ server.dev.mkizka.sample.sampleMethod(() => {
   };
 });
 
-
 // server.xrpc.method("foo.bar", () => {
 //   return {
 //     encoding: "application/json",
