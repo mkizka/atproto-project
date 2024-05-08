@@ -1,5 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 
+import { AtpBaseClient } from "~/generated/api";
+
 export const meta: MetaFunction = () => {
   return [
     { title: "New Remix App" },
@@ -7,10 +9,19 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+const client = new AtpBaseClient();
+
 export default function Index() {
+  const handleClick = async () => {
+    const agent = client.service(location.href);
+    await agent.dev.mkizka.sample
+      .sampleMethod({ actor: "mkizka.dev" })
+      .then(console.log);
+  };
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
       <h1>Welcome to Remix</h1>
+      <button onClick={handleClick}>button</button>
       <ul>
         <li>
           <a
