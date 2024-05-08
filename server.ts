@@ -15,10 +15,14 @@ app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
 
+ 
 const build = viteDevServer
   ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build")
-  : await import("./build/server/index.js");
+  : // @ts-ignore
+    await import("./build/server/index.js");
 
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 app.all("*", createRequestHandler({ build }));
 
 app.listen(3000, () => {
