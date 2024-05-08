@@ -7,14 +7,17 @@
   },
   "scripts": {
     "build": "remix vite:build",
-    "dev": "tsx ./server.js",
+    "dev": "tsx ./app/server.js",
     "format": "prettier . --write && eslint . --fix",
     "postinstall": "tsx ./scripts/generate.ts",
     "prepare": "husky",
-    "start": "NODE_ENV=production tsx ./server.ts",
+    "start": "NODE_ENV=production tsx ./app/server.ts",
     "typecheck": "tsc"
   },
   "dependencies": {
+    "@atproto/lexicon": "^0.4.0",
+    "@atproto/xrpc": "^0.5.0",
+    "@atproto/xrpc-server": "^0.5.1",
     "@remix-run/express": "^2.9.1",
     "@remix-run/node": "^2.9.1",
     "@remix-run/react": "^2.9.1",
