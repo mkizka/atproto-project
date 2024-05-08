@@ -7,12 +7,12 @@ const viteDevServer =
     : await import("vite").then((vite) =>
         vite.createServer({
           server: { middlewareMode: true },
-        })
+        }),
       );
 
 const app = express();
 app.use(
-  viteDevServer ? viteDevServer.middlewares : express.static("build/client")
+  viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
 
 const build = viteDevServer
