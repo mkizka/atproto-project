@@ -9,6 +9,7 @@
     "build": "remix vite:build",
     "dev": "node ./server.js",
     "format": "prettier . --write && eslint . --fix",
+    "prepare": "husky",
     "start": "NODE_ENV=production node ./server.js",
     "typecheck": "tsc"
   },
@@ -27,6 +28,8 @@
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "eslint": "^8.38.0",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
     "prettier": "^3.2.5",
     "prettier-plugin-pkg": "^0.18.1",
     "typescript": "^5.1.6",
@@ -34,6 +37,10 @@
     "vite-tsconfig-paths": "^4.2.1"
   },
   "sideEffects": false,
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "*.{js,mjs,ts,tsx}": "eslint --fix"
+  },
   "prettier": {
     "plugins": [
       "prettier-plugin-pkg"
