@@ -1,4 +1,5 @@
 import { createRequestHandler } from "@remix-run/express";
+import type { ServerBuild } from "@remix-run/node";
 import express from "express";
 
 const viteDevServer =
@@ -15,15 +16,11 @@ app.use(
   viteDevServer ? viteDevServer.middlewares : express.static("build/client"),
 );
 
- 
 const build = viteDevServer
   ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build")
-  : // @ts-ignore
-    await import("./build/server/index.js");
+  : await import("./build/server/index.js");
 
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
-app.all("*", createRequestHandler({ build }));
+app.all("*", createRequestHandler({ build: build as ServerBuild }));
 
 app.listen(3000, () => {
   console.log("App listening on http://localhost:3000");
