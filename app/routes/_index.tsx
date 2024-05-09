@@ -1,6 +1,6 @@
 import type { MetaFunction } from "@remix-run/node";
 
-import { AtpBaseClient } from "~/generated/api";
+import { Sortable } from "~/components/Sortable";
 
 export const meta: MetaFunction = () => {
   return [
@@ -9,21 +9,6 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-const client = new AtpBaseClient();
-
 export default function Index() {
-  const handleClick = async () => {
-    const agent = client.service(location.href);
-    await agent.dev.mkizka.sample
-      .sampleMethod({ actor: "mkizka.dev" })
-      .then(console.log);
-  };
-  return (
-    <button
-      className="p-4 bg-blue-500 text-white rounded"
-      onClick={handleClick}
-    >
-      Click me
-    </button>
-  );
+  return <Sortable />;
 }
