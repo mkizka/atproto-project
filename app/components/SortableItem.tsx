@@ -2,7 +2,7 @@ import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { Card } from "./Card";
+import { Card } from "./shadcn/ui/card";
 
 type Props = {
   id: UniqueIdentifier;
@@ -19,6 +19,7 @@ export function SortableItem({ id }: Props) {
 
   return (
     <Card
+      className="p-4"
       suppressHydrationWarning
       ref={setNodeRef}
       style={style}
