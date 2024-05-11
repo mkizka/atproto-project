@@ -25,12 +25,15 @@
     "@remix-run/express": "^2.9.1",
     "@remix-run/node": "^2.9.1",
     "@remix-run/react": "^2.9.1",
+    "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "express": "^4.19.2",
     "isbot": "^5.1.6",
+    "lucide-react": "^0.378.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "tailwind-merge": "^2.3.0"
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@atproto/lex-cli": "0.3.2",
@@ -41,6 +44,7 @@
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
     "eslint": "^9.2.0",
+    "eslint-plugin-tailwindcss": "^3.15.1",
     "glob": "^10.3.12",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
