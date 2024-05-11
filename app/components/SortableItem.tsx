@@ -1,14 +1,16 @@
-import type { UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+
+import type { CardRecord } from "~/api/types";
 
 import { Card } from "./shadcn/ui/card";
 
 type Props = {
-  id: UniqueIdentifier;
+  id: string;
+  card: CardRecord;
 };
 
-export function SortableItem({ id }: Props) {
+export function SortableItem({ id, card }: Props) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -26,7 +28,7 @@ export function SortableItem({ id }: Props) {
       {...attributes}
       {...listeners}
     >
-      123
+      {JSON.stringify(card)}
     </Card>
   );
 }

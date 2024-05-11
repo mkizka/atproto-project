@@ -15,13 +15,39 @@
             "description": "List of cards in the board.",
             "items": {
               "type": "union",
-              "refs": ["dev.mkizka.test.profile.defs#blueskyCard"]
+              "refs": ["#linkCard", "#blueskyProfileCard"]
             }
           },
           "createdAt": {
             "type": "string",
             "description": "Creation date of the board."
           }
+        }
+      }
+    },
+    "linkCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the card"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL of the link"
+        }
+      }
+    },
+    "blueskyProfileCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "ID of the card"
+        },
+        "handle": {
+          "type": "string",
+          "description": "Handle in bluesky"
         }
       }
     }

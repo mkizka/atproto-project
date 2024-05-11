@@ -1,4 +1,4 @@
-import type { DragEndEvent, UniqueIdentifier } from "@dnd-kit/core";
+import type { DragEndEvent } from "@dnd-kit/core";
 import {
   closestCenter,
   DndContext,
@@ -13,16 +13,17 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
+
+import type { CardRecord } from "~/api/types";
 
 import { SortableItem } from "./SortableItem";
 
-type Item = {
-  id: UniqueIdentifier;
+type Props = {
+  items: CardRecord[];
+  setItems: React.Dispatch<React.SetStateAction<CardRecord[] | null>>;
 };
 
-export function Sortable() {
-  const [items, setItems] = useState<Item[]>([{ id: 1 }, { id: 2 }, { id: 3 }]);
+export function Sortable({ items, setItems }: Props) {
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -32,21 +33,28 @@ export function Sortable() {
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       setItems((items) => {
+        if (!items) return items;
         const oldIndex = items.findIndex((item) => item.id === active.id);
         const newIndex = items.findIndex((item) => item.id === over!.id);
         return arrayMove(items, oldIndex, newIndex);
       });
     }
   };
+  const normalizedItems = items.filter((item) => !!item.id);
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={items} strategy={verticalListSortingStrategy}>
-        {items.map((item) => (
-          <SortableItem key={item.id} id={item.id} />
+      <SortableContext
+        // @ts-expect-error
+        items={normalizedItems}
+        strategy={verticalListSortingStrategy}
+      >
+        {normalizedItems.map((item) => (
+          // @ts-expect-error
+          <SortableItem key={item.id} id={item.id} card={item} />
         ))}
       </SortableContext>
     </DndContext>

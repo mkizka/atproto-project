@@ -43,6 +43,16 @@ class MyAgent {
     this.saveJwtToStorage(this.bskyAgent.session!);
   }
 
+  async getBoard() {
+    if (!this.bskyAgent.session) {
+      throw new Error("Not logged in");
+    }
+    return await this.dev.mkizka.test.profile.board.get({
+      repo: this.bskyAgent.session.did,
+      rkey: "self",
+    });
+  }
+
   async createBoard() {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
@@ -56,6 +66,7 @@ class MyAgent {
         cards: [
           {
             $type: "dev.mkizka.test.profile.defs#blueskyCard",
+            id: crypto.randomUUID(),
             handle: "https://example.com",
           },
         ],
