@@ -1,20 +1,34 @@
 import { BskyAgent } from "@atproto/api";
 
+import { AtpBaseClient } from "~/generated/api";
 import { clientEnv } from "~/utils/env.client";
 
-// const atpClient = new AtpBaseClient()
-// export const atpClient = client.service("http://localhost:3000")
-
-const agent = new BskyAgent({
-  service: clientEnv.BSKY_URL,
-});
-
 export const updateCards = async () => {
-  if (!agent.hasSession) {
-    await agent.login({
+  const bskyAgent = new BskyAgent({
+    service: clientEnv.BSKY_URL,
+  });
+  if (!bskyAgent.hasSession) {
+    await bskyAgent.login({
       identifier: clientEnv.BSKY_USERNAME,
       password: clientEnv.BSKY_PASSWORD,
     });
   }
-  console.log(agent.session);
+  const myAgent = new AtpBaseClient().service(clientEnv.BSKY_URL);
+  console.log(bskyAgent.session!.accessJwt);
+  myAgent.setHeader("Authorization", `Bearer ${bskyAgent.session!.accessJwt}`);
+  await myAgent.dev.mkizka.test.profile.board.create(
+    {
+      repo: clientEnv.BSKY_USERNAME,
+      validate: false,
+    },
+    {
+      cards: [
+        {
+          type: "test2",
+          link: "https://example.com",
+        },
+      ],
+      createdAt: new Date().toISOString(),
+    },
+  );
 };

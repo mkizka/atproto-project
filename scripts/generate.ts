@@ -3,7 +3,7 @@ import { globSync } from "glob";
 
 const lexicons = [
   ...globSync("./lexicons/**/*.json"),
-  ...globSync("./atproto/lexicons/com/atproto/**/*.json"),
+  ...globSync("./atproto/lexicons/**/*.json"),
 ].join(" ");
 
 const $ = (command: string) => execSync(command, { stdio: "inherit" });

@@ -1,11 +1,11 @@
 {
   "lexicon": 1,
-  "id": "dev.mkizka.atp.profile.board",
+  "id": "dev.mkizka.test.profile.board",
   "defs": {
     "main": {
       "type": "record",
       "description": "Record containing a cards of your profile.",
-      "key": "literal:board",
+      "key": "literal:self",
       "record": {
         "type": "object",
         "required": ["cards", "createdAt"],
