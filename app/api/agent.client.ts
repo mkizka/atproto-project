@@ -55,8 +55,8 @@ class MyAgent {
       {
         cards: [
           {
-            type: "test",
-            link: "https://example.com",
+            $type: "dev.mkizka.test.profile.defs#blueskyCard",
+            handle: "https://example.com",
           },
         ],
         createdAt: new Date().toISOString(),

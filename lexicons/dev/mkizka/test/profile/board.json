@@ -13,26 +13,15 @@
           "cards": {
             "type": "array",
             "description": "List of cards in the board.",
-            "items": { "type": "ref", "ref": "#card" }
+            "items": {
+              "type": "union",
+              "refs": ["dev.mkizka.test.profile.defs#blueskyCard"]
+            }
           },
           "createdAt": {
             "type": "string",
             "description": "Creation date of the board."
           }
-        }
-      }
-    },
-    "card": {
-      "type": "object",
-      "description": "Entity representing a card.",
-      "properties": {
-        "type": {
-          "type": "string",
-          "description": "Type of the card."
-        },
-        "link": {
-          "type": "string",
-          "description": "A link to other service."
         }
       }
     }
