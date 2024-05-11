@@ -32,5 +32,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <main className="flex justify-center">
+      <div className="w-full max-w-[600px]">
+        <Outlet />
+      </div>
+    </main>
+  );
 }
