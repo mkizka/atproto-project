@@ -53,26 +53,27 @@ class MyAgent {
     });
   }
 
-  async createBoard() {
+  async updateBoard() {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
-    return await this.dev.mkizka.test.profile.board.create(
-      {
-        repo: this.bskyAgent.session.did,
-        validate: false,
-      },
-      {
+    // dev.mkizka.test.profile.boardにはなぜかputがないので、com.atproto.repoを使う
+    return await this.bskyAgent.com.atproto.repo.putRecord({
+      repo: this.bskyAgent.session.did,
+      validate: false,
+      collection: "dev.mkizka.test.profile.board",
+      rkey: "self",
+      record: {
         cards: [
           {
-            $type: "dev.mkizka.test.profile.defs#blueskyCard",
+            $type: "dev.mkizka.test.profile.board#blueskyProfileCard",
             id: crypto.randomUUID(),
-            handle: "https://example.com",
+            handle: "mkizka.dev",
           },
         ],
         createdAt: new Date().toISOString(),
       },
-    );
+    });
   }
 
   async deleteBoard() {

@@ -26,7 +26,7 @@ export function Board() {
   return (
     <div>
       <Button onClick={() => myAgent.login()}>Sign in</Button>
-      <Button onClick={() => myAgent.createBoard()}>Save</Button>
+      <Button onClick={() => myAgent.updateBoard()}>Save</Button>
       <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
       <Sortable items={cards} setItems={setCards} />
     </div>
