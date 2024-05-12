@@ -1,5 +1,9 @@
 import type { DevMkizkaTestProfileBoard } from "~/generated/api";
 
-export type CardRecord =
-  | DevMkizkaTestProfileBoard.LinkCard
-  | DevMkizkaTestProfileBoard.BlueskyProfileCard;
+type RecursiveNonNullable<T> = {
+  [K in keyof T]-?: NonNullable<T[K]>;
+};
+
+export type ValidCardRecord =
+  | RecursiveNonNullable<DevMkizkaTestProfileBoard.LinkCard>
+  | RecursiveNonNullable<DevMkizkaTestProfileBoard.BlueskyProfileCard>;

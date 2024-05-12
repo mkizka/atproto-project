@@ -70,6 +70,11 @@ class MyAgent {
             id: crypto.randomUUID(),
             handle: "mkizka.dev",
           },
+          {
+            $type: "dev.mkizka.test.profile.board#linkCard",
+            id: crypto.randomUUID(),
+            url: "https://mkizka.dev",
+          },
         ],
         createdAt: new Date().toISOString(),
       },

@@ -1,20 +1,25 @@
 import { useEffect, useState } from "react";
 
 import { myAgent } from "~/api/agent.client";
-import type { CardRecord } from "~/api/types";
+import type { ValidCardRecord } from "~/api/types";
+import { DevMkizkaTestProfileBoard } from "~/generated/api";
 
 import { Button } from "./shadcn/ui/button";
 import { Sortable } from "./Sortable";
 
 export function Board() {
-  const [cards, setCards] = useState<CardRecord[] | null>(null);
+  const [cards, setCards] = useState<ValidCardRecord[] | null>(null);
 
   useEffect(() => {
     const updateCards = async () => {
       await myAgent.login();
       const board = await myAgent.getBoard();
-      console.log(board.value.cards);
-      setCards(board.value.cards);
+      const validBoard = DevMkizkaTestProfileBoard.validateRecord(board.value);
+      if (validBoard.success) {
+        // @ts-expect-error
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        setCards(validBoard.value.cards);
+      }
     };
     void updateCards();
   }, []);
@@ -28,7 +33,7 @@ export function Board() {
       <Button onClick={() => myAgent.login()}>Sign in</Button>
       <Button onClick={() => myAgent.updateBoard()}>Save</Button>
       <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
-      <Sortable items={cards} setItems={setCards} />
+      <Sortable cards={cards} setItems={setCards} />
     </div>
   );
 }
