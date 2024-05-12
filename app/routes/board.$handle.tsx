@@ -1,25 +1,39 @@
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
+import { useState } from "react";
 
-import { bskyAgent } from "~/api/agent";
-import { Board } from "~/components/Board";
+import { bskyAgent, myAgent } from "~/api/agent";
+import type { ValidCardRecord } from "~/api/types";
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "~/components/shadcn/ui/avatar";
+import { Button } from "~/components/shadcn/ui/button";
+import { Sortable } from "~/components/Sortable";
 
 export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
-  const response = await bskyAgent.getProfile({
-    actor: params.handle!,
-  });
-  return response.data;
+  await myAgent.login();
+  return {
+    profile: await bskyAgent
+      .getProfile({
+        actor: params.handle!,
+      })
+      .then((response) => response.data),
+    board: await myAgent //
+      .getBoard()
+      .then((response) => response.value),
+  };
 }
 
 export { HydrateFallback } from "~/components/HydrateFallback";
 
 export default function Index() {
-  const profile = useLoaderData<typeof clientLoader>();
+  const { profile, board } = useLoaderData<typeof clientLoader>();
+  const [cards, setCards] = useState<ValidCardRecord[]>(
+    // @ts-expect-error
+    board.cards,
+  );
   return (
     <>
       <section className="flex w-full justify-center py-4">
@@ -31,7 +45,12 @@ export default function Index() {
         </Avatar>
       </section>
       <section className="w-full">
-        <Board />
+        <div className="flex">
+          <Button onClick={() => myAgent.login()}>Sign in</Button>
+          <Button onClick={() => myAgent.updateBoard()}>Save</Button>
+          <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
+        </div>
+        <Sortable cards={cards} setCards={setCards} />
       </section>
     </>
   );

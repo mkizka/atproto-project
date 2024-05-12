@@ -1,7 +1,5 @@
 import type { MetaFunction } from "@remix-run/node";
 
-import { Board } from "~/components/Board";
-
 export const meta: MetaFunction = () => {
   return [
     { title: "New Remix App" },
@@ -10,5 +8,5 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  return <Board />;
+  return <p>Hell World</p>;
 }
