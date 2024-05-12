@@ -47,7 +47,7 @@ export default function Index() {
       <section className="w-full">
         <div className="flex">
           <Button onClick={() => myAgent.login()}>Sign in</Button>
-          <Button onClick={() => myAgent.updateBoard()}>Save</Button>
+          <Button onClick={() => myAgent.updateBoard(cards)}>Save</Button>
           <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
         </div>
         <Sortable cards={cards} setCards={setCards} />

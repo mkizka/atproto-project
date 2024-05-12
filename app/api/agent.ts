@@ -4,6 +4,8 @@ import { BskyAgent } from "@atproto/api";
 import { AtpBaseClient } from "~/generated/api";
 import { env } from "~/utils/env";
 
+import type { ValidCardRecord } from "./types";
+
 const LOCALSTORAGE_SESSION_KEY = "dev.mkizka.test.session";
 
 class MyAgent {
@@ -53,7 +55,7 @@ class MyAgent {
     });
   }
 
-  async updateBoard() {
+  async updateBoard(cards: ValidCardRecord[]) {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
@@ -64,18 +66,7 @@ class MyAgent {
       collection: "dev.mkizka.test.profile.board",
       rkey: "self",
       record: {
-        cards: [
-          {
-            $type: "dev.mkizka.test.profile.board#blueskyProfileCard",
-            id: crypto.randomUUID(),
-            handle: "mkizka.dev",
-          },
-          {
-            $type: "dev.mkizka.test.profile.board#linkCard",
-            id: crypto.randomUUID(),
-            url: "https://mkizka.dev",
-          },
-        ],
+        cards,
         createdAt: new Date().toISOString(),
       },
     });
