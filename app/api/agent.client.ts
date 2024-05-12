@@ -94,3 +94,7 @@ class MyAgent {
 }
 
 export const myAgent = new MyAgent();
+
+export const bskyAgent = new BskyAgent({
+  service: "https://public.api.bsky.app",
+});
