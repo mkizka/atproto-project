@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { myAgent } from "~/api/agent.client";
+import { myAgent } from "~/api/agent";
 import type { ValidCardRecord } from "~/api/types";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
 

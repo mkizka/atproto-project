@@ -2,14 +2,14 @@ import type { AtpSessionData } from "@atproto/api";
 import { BskyAgent } from "@atproto/api";
 
 import { AtpBaseClient } from "~/generated/api";
-import { clientEnv } from "~/utils/env.client";
+import { env } from "~/utils/env";
 
 const LOCALSTORAGE_SESSION_KEY = "dev.mkizka.test.session";
 
 class MyAgent {
   constructor(
-    private client = new AtpBaseClient().service(clientEnv.BSKY_URL),
-    private bskyAgent = new BskyAgent({ service: clientEnv.BSKY_URL }),
+    private client = new AtpBaseClient().service(env.VITE_BSKY_URL),
+    private bskyAgent = new BskyAgent({ service: env.VITE_BSKY_URL }),
   ) {}
 
   get dev() {
@@ -32,8 +32,8 @@ class MyAgent {
       await this.bskyAgent.resumeSession(session);
     } else {
       await this.bskyAgent.login({
-        identifier: clientEnv.BSKY_USERNAME,
-        password: clientEnv.BSKY_PASSWORD,
+        identifier: env.VITE_BSKY_USERNAME,
+        password: env.VITE_BSKY_PASSWORD,
       });
     }
     this.client.setHeader(

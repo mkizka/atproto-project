@@ -1,10 +1,9 @@
 import * as v from "valibot";
 
 const envSchema = v.object({
-  NODE_ENV: v.picklist(["development", "production", "test"]),
-  BSKY_USERNAME: v.string(),
-  BSKY_PASSWORD: v.string(),
-  BSKY_URL: v.string([v.url()]),
+  VITE_BSKY_USERNAME: v.string(),
+  VITE_BSKY_PASSWORD: v.string(),
+  VITE_BSKY_URL: v.string([v.url()]),
 });
 
 export type EnvOutput = v.Output<typeof envSchema>;
@@ -17,9 +16,9 @@ const formatValibotErrorMessage = (issues: v.SchemaIssues) => {
     .join(", ");
 };
 
-export const serverEnv = (() => {
-  if (!process.env.SKIP_ENV_VALIDATION) {
-    const parsed = v.safeParse(envSchema, process.env);
+export const env = (() => {
+  if (!import.meta.env.VITE_SKIP_ENV_VALIDATION) {
+    const parsed = v.safeParse(envSchema, import.meta.env);
     if (!parsed.success) {
       throw new Error(
         `❌ Invalid environment variables: ${formatValibotErrorMessage(parsed.issues)}`,

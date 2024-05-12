@@ -1,7 +1,7 @@
 import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
 
-import { bskyAgent } from "~/api/agent.client";
+import { bskyAgent } from "~/api/agent";
 import { Board } from "~/components/Board";
 import {
   Avatar,
