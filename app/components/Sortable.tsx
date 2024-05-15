@@ -20,9 +20,10 @@ import { SocialCard } from "./SocialCard";
 type Props = {
   cards: ValidCardRecord[];
   setCards: React.Dispatch<React.SetStateAction<ValidCardRecord[]>>;
+  sortable?: boolean;
 };
 
-export function Sortable({ cards, setCards }: Props) {
+export function Sortable({ cards, setCards, sortable }: Props) {
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
@@ -42,7 +43,7 @@ export function Sortable({ cards, setCards }: Props) {
     >
       <SortableContext items={cards} strategy={verticalListSortingStrategy}>
         {cards.map((card) => (
-          <SocialCard key={card.id} card={card} />
+          <SocialCard key={card.id} card={card} disabled={!sortable} />
         ))}
       </SortableContext>
     </DndContext>

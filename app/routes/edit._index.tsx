@@ -2,7 +2,7 @@ import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 
-import { bskyAgent, myAgent } from "~/api/agent";
+import { myAgent } from "~/api/agent";
 import type { ValidCardRecord } from "~/api/types";
 import {
   Avatar,
@@ -15,14 +15,8 @@ import { Sortable } from "~/components/Sortable";
 export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
   await myAgent.login();
   return {
-    profile: await bskyAgent
-      .getProfile({
-        actor: params.handle!,
-      })
-      .then((response) => response.data),
-    board: await myAgent //
-      .getBoard()
-      .then((response) => response.value),
+    profile: await myAgent.getProfile().then((response) => response.data),
+    board: await myAgent.getBoard().then((response) => response.value),
   };
 }
 
@@ -50,7 +44,7 @@ export default function Index() {
           <Button onClick={() => myAgent.updateBoard(cards)}>Save</Button>
           <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
         </div>
-        <Sortable cards={cards} setCards={setCards} />
+        <Sortable cards={cards} setCards={setCards} sortable />
       </section>
     </>
   );

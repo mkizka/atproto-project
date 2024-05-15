@@ -45,6 +45,15 @@ class MyAgent {
     this.saveJwtToStorage(this.bskyAgent.session!);
   }
 
+  async getProfile() {
+    if (!this.bskyAgent.session) {
+      throw new Error("Not logged in");
+    }
+    return await this.bskyAgent.getProfile({
+      actor: this.bskyAgent.session.did,
+    });
+  }
+
   async getBoard() {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
