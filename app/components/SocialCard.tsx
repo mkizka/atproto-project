@@ -1,41 +1,51 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { LinkIcon } from "lucide-react";
+import { GripVertical, LinkIcon } from "lucide-react";
 import type { FC, ReactNode } from "react";
 
 import type { ValidCardRecord } from "~/api/types";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
 
 import { BlueskyIcon } from "./board/icons/BlueskyIcon";
+import { Button } from "./shadcn/ui/button";
 import { Card } from "./shadcn/ui/card";
+
+// @dnd-kitのlistenersの型
+// eslint-disable-next-line @typescript-eslint/ban-types
+type Listeners = Record<string, Function>;
 
 type SocialCardContentInnerProps = {
   Icon: FC;
   children: ReactNode;
+  listeners?: Listeners;
 };
 
 function SocialCardContentInner({
   Icon,
+  listeners,
   children,
 }: SocialCardContentInnerProps) {
   return (
     <div className="flex h-8 items-center gap-2">
       <Icon />
       <p>{children}</p>
+      <Button variant="ghost" size="icon" className="ml-auto" {...listeners}>
+        <GripVertical className="fill-current text-muted-foreground" />
+      </Button>
     </div>
   );
 }
 
-function SocialCardContent({ card }: SocialCardProps) {
+function SocialCardContent({ card, listeners }: SocialCardProps) {
   if (DevMkizkaTestProfileBoard.isBlueskyProfileCard(card)) {
     return (
-      <SocialCardContentInner Icon={BlueskyIcon}>
+      <SocialCardContentInner Icon={BlueskyIcon} listeners={listeners}>
         {card.handle}
       </SocialCardContentInner>
     );
   }
   return (
-    <SocialCardContentInner Icon={LinkIcon}>
+    <SocialCardContentInner Icon={LinkIcon} listeners={listeners}>
       <a href={card.url}>{card.url}</a>
     </SocialCardContentInner>
   );
@@ -43,6 +53,7 @@ function SocialCardContent({ card }: SocialCardProps) {
 
 type SocialCardProps = {
   card: ValidCardRecord;
+  listeners?: Listeners;
   disabled?: boolean;
 };
 
@@ -64,9 +75,8 @@ export function SocialCard({ card, disabled }: SocialCardProps) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
     >
-      <SocialCardContent card={card} />
+      <SocialCardContent card={card} listeners={listeners} />
     </Card>
   );
 }
