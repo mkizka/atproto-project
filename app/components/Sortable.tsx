@@ -36,16 +36,18 @@ export function Sortable({ cards, setCards, sortable }: Props) {
     }
   };
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragEnd={handleDragEnd}
-    >
-      <SortableContext items={cards} strategy={verticalListSortingStrategy}>
-        {cards.map((card) => (
-          <SocialCard key={card.id} card={card} disabled={!sortable} />
-        ))}
-      </SortableContext>
-    </DndContext>
+    <div className="flex flex-col gap-2">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={cards} strategy={verticalListSortingStrategy}>
+          {cards.map((card) => (
+            <SocialCard key={card.id} card={card} disabled={!sortable} />
+          ))}
+        </SortableContext>
+      </DndContext>
+    </div>
   );
 }
