@@ -1,6 +1,7 @@
 import type { AtpSessionData } from "@atproto/api";
 import { BskyAgent } from "@atproto/api";
 
+import type { AtpServiceClient } from "~/generated/api";
 import { AtpBaseClient } from "~/generated/api";
 import { env } from "~/utils/env";
 
@@ -9,10 +10,13 @@ import type { ValidCardRecord } from "./types";
 const LOCALSTORAGE_SESSION_KEY = "dev.mkizka.test.session";
 
 class MyAgent {
-  constructor(
-    private client = new AtpBaseClient().service(env.VITE_BSKY_URL),
-    private bskyAgent = new BskyAgent({ service: env.VITE_BSKY_URL }),
-  ) {}
+  client: AtpServiceClient;
+  bskyAgent: BskyAgent;
+
+  constructor({ service }: { service: string }) {
+    this.client = new AtpBaseClient().service(service);
+    this.bskyAgent = new BskyAgent({ service });
+  }
 
   get dev() {
     return this.client.dev;
@@ -45,7 +49,7 @@ class MyAgent {
     this.saveJwtToStorage(this.bskyAgent.session!);
   }
 
-  async getProfile() {
+  async getSessionProfile() {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
@@ -54,12 +58,19 @@ class MyAgent {
     });
   }
 
-  async getBoard() {
+  async getSessionBoard() {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
     return await this.dev.mkizka.test.profile.board.get({
       repo: this.bskyAgent.session.did,
+      rkey: "self",
+    });
+  }
+
+  async getBoard({ repo }: { repo: string }) {
+    return await this.dev.mkizka.test.profile.board.get({
+      repo,
       rkey: "self",
     });
   }
@@ -93,8 +104,10 @@ class MyAgent {
   }
 }
 
-export const myAgent = new MyAgent();
+export const myAgent = new MyAgent({
+  service: env.VITE_BSKY_URL,
+});
 
-export const bskyAgent = new BskyAgent({
+export const publicBskyAgent = new BskyAgent({
   service: "https://public.api.bsky.app",
 });

@@ -1,7 +1,8 @@
+import type { ClientLoaderFunctionArgs } from "@remix-run/react";
 import { useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 
-import { myAgent } from "~/api/agent";
+import { myAgent, publicBskyAgent } from "~/api/agent";
 import type { ValidCardRecord } from "~/api/types";
 import {
   Avatar,
@@ -11,15 +12,19 @@ import {
 import { Button } from "~/components/shadcn/ui/button";
 import { Sortable } from "~/components/Sortable";
 
-export async function clientLoader() {
-  await myAgent.login();
+export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
   return {
-    profile: await myAgent
-      .getSessionProfile()
+    profile: await publicBskyAgent
+      .getProfile({
+        actor: params.handle!,
+      })
       .then((response) => response.data),
     board: await myAgent
-      .getSessionBoard() //
-      .then((response) => response.value),
+      .getBoard({
+        repo: params.handle!,
+      })
+      .then((response) => response.value)
+      .catch(() => ({ cards: [] })),
   };
 }
 
