@@ -43,7 +43,9 @@ const ItemTemplate = forwardRef<HTMLDivElement, ItemTemplateProps>(
   ) => {
     return (
       <Card
-        className={cn("flex h-16", {
+        // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
+        // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
+        className={cn("flex h-16 touch-none", {
           "opacity-30": isDragging,
         })}
         ref={ref}
