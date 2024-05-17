@@ -18,6 +18,7 @@
   "dependencies": {
     "@atproto/api": "^0.12.9",
     "@atproto/lexicon": "^0.4.0",
+    "@atproto/repo": "^0.4.0",
     "@atproto/xrpc": "^0.5.0",
     "@atproto/xrpc-server": "^0.5.1",
     "@dnd-kit/core": "^6.1.0",
@@ -40,6 +41,7 @@
     "valibot": "^0.30.0"
   },
   "devDependencies": {
+    "@atproto/bsky": "^0.0.52",
     "@atproto/lex-cli": "0.3.2",
     "@mkizka/eslint-config": "^4.3.0",
     "@remix-run/dev": "^2.9.1",
