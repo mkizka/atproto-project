@@ -22,18 +22,21 @@ class MyAgent {
     return this.client.dev;
   }
 
-  private loadJwtFromStorage() {
-    const accessJwt = localStorage.getItem(LOCALSTORAGE_SESSION_KEY);
-    if (!accessJwt) return null;
-    return JSON.parse(accessJwt) as AtpSessionData;
+  private getSession() {
+    if (this.bskyAgent.session) {
+      return this.bskyAgent.session;
+    }
+    const cachedSession = localStorage.getItem(LOCALSTORAGE_SESSION_KEY);
+    if (!cachedSession) return null;
+    return JSON.parse(cachedSession) as AtpSessionData;
   }
 
-  private saveJwtToStorage(jwt: AtpSessionData) {
-    localStorage.setItem(LOCALSTORAGE_SESSION_KEY, JSON.stringify(jwt));
+  private saveSession(session: AtpSessionData) {
+    localStorage.setItem(LOCALSTORAGE_SESSION_KEY, JSON.stringify(session));
   }
 
   async login() {
-    const session = this.loadJwtFromStorage();
+    const session = this.getSession();
     if (session) {
       await this.bskyAgent.resumeSession(session);
     } else {
@@ -46,7 +49,7 @@ class MyAgent {
       "Authorization",
       `Bearer ${this.bskyAgent.session!.accessJwt}`,
     );
-    this.saveJwtToStorage(this.bskyAgent.session!);
+    this.saveSession(this.bskyAgent.session!);
   }
 
   async getSessionProfile() {
