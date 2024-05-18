@@ -46,7 +46,9 @@ export function Board({ profile, board, editable }: Props) {
         )}
         <div className="flex flex-col gap-2">
           <Sortable cards={cards} setCards={setCards} sortable={editable} />
-          <Modal open={open} onOpenChange={setOpen} onSubmit={handleSubmit} />
+          {editable && (
+            <Modal open={open} onOpenChange={setOpen} onSubmit={handleSubmit} />
+          )}
         </div>
       </section>
     </>

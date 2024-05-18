@@ -66,16 +66,16 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
         // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
         className={cn("flex h-16 touch-none hover:opacity-70", {
           "opacity-30": isDragging,
-          "hover:opacity-100": isOverlay, // DragOverlayで使用する場合はhoverを無効化
+          // DragOverlayは105%に拡大しておき100%→105%の拡大アニメーションをつける
+          "animate-in zoom-in-100 scale-105 shadow-2xl": isOverlay,
+          // DragOverlayで使用する場合はhoverを無効化
+          "hover:opacity-100": isOverlay,
         })}
         ref={ref}
         style={style}
         {...attributes}
       >
-        <a
-          className="flex size-full items-center gap-4 p-4 hover:underline"
-          href={url}
-        >
+        <a className="flex size-full items-center gap-4 p-4" href={url}>
           <Icon className="size-8" />
           <p>{text}</p>
         </a>
@@ -110,7 +110,10 @@ export function SortableItem({ card, disabled }: SocialCardProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: card.id, disabled });
+  } = useSortable({
+    id: card.id,
+    disabled,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
