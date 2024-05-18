@@ -51,22 +51,20 @@ export function Sortable({ cards, setCards, sortable }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={cards} strategy={verticalListSortingStrategy}>
-          {cards.map((card) => (
-            <SortableItem key={card.id} card={card} disabled={!sortable} />
-          ))}
-        </SortableContext>
-        <DragOverlay>
-          {activeCard ? <Item card={activeCard} /> : null}
-        </DragOverlay>
-      </DndContext>
-    </div>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext items={cards} strategy={verticalListSortingStrategy}>
+        {cards.map((card) => (
+          <SortableItem key={card.id} card={card} disabled={!sortable} />
+        ))}
+      </SortableContext>
+      <DragOverlay>
+        {activeCard ? <Item card={activeCard} isOverlay /> : null}
+      </DragOverlay>
+    </DndContext>
   );
 }

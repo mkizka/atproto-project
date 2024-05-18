@@ -21,6 +21,7 @@ type ItemTemplateProps = {
   text: string;
   url: string;
   disabled?: boolean;
+  isOverlay?: boolean;
   isDragging?: boolean;
   style?: React.CSSProperties;
   attributes?: DraggableAttributes;
@@ -35,6 +36,7 @@ const ItemTemplate = forwardRef<HTMLDivElement, ItemTemplateProps>(
       url,
       disabled,
       isDragging,
+      isOverlay,
       style,
       attributes,
       listeners,
@@ -45,8 +47,9 @@ const ItemTemplate = forwardRef<HTMLDivElement, ItemTemplateProps>(
       <Card
         // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
         // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
-        className={cn("flex h-16 touch-none", {
+        className={cn("flex h-16 touch-none hover:opacity-70", {
           "opacity-30": isDragging,
+          "hover:opacity-100": isOverlay, // DragOverlayで使用する場合はhoverを無効化
         })}
         ref={ref}
         style={style}
