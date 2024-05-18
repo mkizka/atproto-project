@@ -34,21 +34,27 @@ export function Board({ profile, board, editable }: Props) {
           </AvatarFallback>
         </Avatar>
       </section>
-      <section className="w-full">
-        {editable && (
-          <div className="flex">
-            <Button onClick={() => myAgent.login()}>Sign in</Button>
-            <Button onClick={() => myAgent.updateBoard({ ...board, cards })}>
-              Save
-            </Button>
-            <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
-          </div>
-        )}
-        <div className="flex flex-col gap-2">
-          <Sortable cards={cards} setCards={setCards} sortable={editable} />
+      <section className="flex flex-col items-center">
+        <div className="w-full max-w-[95vw] sm:max-w-screen-sm">
           {editable && (
-            <Modal open={open} onOpenChange={setOpen} onSubmit={handleSubmit} />
+            <div className="flex">
+              <Button onClick={() => myAgent.login()}>Sign in</Button>
+              <Button onClick={() => myAgent.updateBoard({ ...board, cards })}>
+                Save
+              </Button>
+              <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
+            </div>
           )}
+          <div className="flex flex-col gap-2">
+            <Sortable cards={cards} setCards={setCards} sortable={editable} />
+            {editable && (
+              <Modal
+                open={open}
+                onOpenChange={setOpen}
+                onSubmit={handleSubmit}
+              />
+            )}
+          </div>
         </div>
       </section>
     </>

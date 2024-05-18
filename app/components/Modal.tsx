@@ -31,7 +31,7 @@ export function Modal({ onSubmit, ...props }: Props) {
           <CirclePlus className="stroke-current text-muted-foreground" />
         </Card>
       </DialogTrigger>
-      <DialogContent className="top-24 translate-y-0 sm:max-w-[425px]">
+      <DialogContent className="top-48 max-w-[90vw] sm:max-w-screen-sm">
         <form
           className="grid gap-4"
           onSubmit={(e) => {
