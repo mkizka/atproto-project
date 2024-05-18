@@ -37,5 +37,6 @@ app.all("*", createRequestHandler({ build: build as ServerBuild }));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
+  // eslint-disable-next-line no-console
   console.log(`App listening on http://localhost:${port}`);
 });

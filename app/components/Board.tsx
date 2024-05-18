@@ -3,8 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState } from "react";
 
 import { myAgent } from "~/api/agent";
-import type { ValidCardRecord } from "~/api/types";
-import type { DevMkizkaTestProfileBoard } from "~/generated/api";
+import type { BoardScheme, CardScheme } from "~/api/validator";
 
 import { Modal } from "./Modal";
 import { Button } from "./shadcn/ui/button";
@@ -12,44 +11,16 @@ import { Sortable } from "./Sortable";
 
 type Props = {
   profile: AppBskyActorDefs.ProfileViewDetailed;
-  board: DevMkizkaTestProfileBoard.Record;
+  board: BoardScheme;
   editable?: boolean;
-};
-
-const isBskyProfileUrl = (hostname: string, paths: string[]) => {
-  return (
-    hostname === "bsky.app" && paths[1] === "profile" && paths[3] === undefined
-  );
-};
-
-const convertUrlToCard = (input: string): ValidCardRecord => {
-  const url = new URL(input);
-  const paths = url.pathname.split("/");
-  if (isBskyProfileUrl(url.hostname, paths)) {
-    return {
-      $type: "dev.mkizka.test.profile.board#blueskyProfileCard",
-      id: crypto.randomUUID(),
-      handle: paths[2],
-    };
-  }
-  return {
-    $type: "dev.mkizka.test.profile.board#linkCard",
-    id: crypto.randomUUID(),
-    url: input,
-  };
 };
 
 export function Board({ profile, board, editable }: Props) {
   const [open, setOpen] = useState(false);
-  const [cards, setCards] = useState<ValidCardRecord[]>(
-    // @ts-expect-error
-    board.cards,
-  );
+  const [cards, setCards] = useState<CardScheme[]>(board.cards ?? []);
 
   const handleSubmit = (input: string) => {
-    setCards((prev) => {
-      return [...prev, convertUrlToCard(input)];
-    });
+    setCards([...cards, { id: crypto.randomUUID(), url: input }]);
     setOpen(false);
   };
 
@@ -67,7 +38,9 @@ export function Board({ profile, board, editable }: Props) {
         {editable && (
           <div className="flex">
             <Button onClick={() => myAgent.login()}>Sign in</Button>
-            <Button onClick={() => myAgent.updateBoard(cards)}>Save</Button>
+            <Button onClick={() => myAgent.updateBoard({ ...board, cards })}>
+              Save
+            </Button>
             <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
           </div>
         )}

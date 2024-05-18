@@ -5,7 +5,7 @@ import type { AtpServiceClient } from "~/generated/api";
 import { AtpBaseClient } from "~/generated/api";
 import { env } from "~/utils/env";
 
-import type { ValidCardRecord } from "./types";
+import type { BoardScheme } from "./validator";
 
 const LOCALSTORAGE_SESSION_KEY = "dev.mkizka.test.session";
 
@@ -78,7 +78,7 @@ class MyAgent {
     });
   }
 
-  async updateBoard(cards: ValidCardRecord[]) {
+  async updateBoard(board: BoardScheme) {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
@@ -88,10 +88,7 @@ class MyAgent {
       validate: false,
       collection: "dev.mkizka.test.profile.board",
       rkey: "self",
-      record: {
-        cards,
-        createdAt: new Date().toISOString(),
-      },
+      record: board,
     });
   }
 

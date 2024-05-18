@@ -1,30 +1,23 @@
-import * as v from "valibot";
+import { z } from "zod";
+import { fromZodError } from "zod-validation-error";
 
-const envSchema = v.object({
-  VITE_BSKY_USERNAME: v.string(),
-  VITE_BSKY_PASSWORD: v.string(),
-  VITE_BSKY_URL: v.string([v.url()]),
+const envSchema = z.object({
+  VITE_BSKY_USERNAME: z.string(),
+  VITE_BSKY_PASSWORD: z.string(),
+  VITE_BSKY_URL: z.string().url(),
 });
 
-export type EnvOutput = v.Output<typeof envSchema>;
-
-const formatValibotErrorMessage = (issues: v.SchemaIssues) => {
-  return issues
-    .map((issue) => {
-      return `${issue.path?.join(".") ?? "unknown"} ${issue.message}`;
-    })
-    .join(", ");
-};
+export type EnvScheme = z.infer<typeof envSchema>;
 
 export const env = (() => {
   if (!import.meta.env.VITE_SKIP_ENV_VALIDATION) {
-    const parsed = v.safeParse(envSchema, import.meta.env);
+    const parsed = envSchema.safeParse(import.meta.env);
     if (!parsed.success) {
       throw new Error(
-        `❌ Invalid environment variables: ${formatValibotErrorMessage(parsed.issues)}`,
+        `❌ Invalid environment variables: ${fromZodError(parsed.error).toString()}`,
       );
     }
-    return parsed.output;
+    return parsed.data;
   }
-  return process.env as unknown as EnvOutput;
+  return process.env as unknown as EnvScheme;
 })();

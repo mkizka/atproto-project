@@ -15,17 +15,21 @@
             "description": "List of cards in the board.",
             "items": {
               "type": "union",
-              "refs": ["#linkCard", "#blueskyProfileCard"]
+              "refs": ["#card"]
             }
           },
           "createdAt": {
             "type": "string",
             "description": "Creation date of the board."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Last update date of the board."
           }
         }
       }
     },
-    "linkCard": {
+    "card": {
       "type": "object",
       "properties": {
         "id": {
@@ -35,19 +39,6 @@
         "url": {
           "type": "string",
           "description": "URL of the link"
-        }
-      }
-    },
-    "blueskyProfileCard": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "ID of the card"
-        },
-        "handle": {
-          "type": "string",
-          "description": "Handle in bluesky"
         }
       }
     }

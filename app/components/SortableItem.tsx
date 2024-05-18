@@ -4,22 +4,48 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, LinkIcon } from "lucide-react";
 import { type FC, forwardRef } from "react";
 
-import type { ValidCardRecord } from "~/api/types";
-import { DevMkizkaTestProfileBoard } from "~/generated/api";
+import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
 
 import { BlueskyIcon } from "./board/icons/BlueskyIcon";
 import { Button } from "./shadcn/ui/button";
 import { Card } from "./shadcn/ui/card";
 
+const isBlueskyProfileUrl = (hostname: string, paths: string[]) => {
+  return (
+    hostname === "bsky.app" && paths[1] === "profile" && paths[3] === undefined
+  );
+};
+
+const parseCardUrl = (
+  card: CardScheme,
+): {
+  icon: FC<React.SVGProps<SVGSVGElement>>;
+  text: string;
+  url: string;
+} => {
+  const url = new URL(card.url);
+  const paths = url.pathname.split("/");
+  if (isBlueskyProfileUrl(url.hostname, paths)) {
+    return {
+      icon: BlueskyIcon,
+      text: paths[2],
+      url: card.url,
+    };
+  }
+  return {
+    icon: LinkIcon,
+    text: card.url,
+    url: card.url,
+  };
+};
+
 // @dnd-kitのlistenersの型
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Listeners = Record<string, Function>;
 
-type ItemTemplateProps = {
-  icon: FC<React.SVGProps<SVGSVGElement>>;
-  text: string;
-  url: string;
+type ItemProps = {
+  card: CardScheme;
   disabled?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
@@ -28,21 +54,12 @@ type ItemTemplateProps = {
   listeners?: Listeners;
 };
 
-const ItemTemplate = forwardRef<HTMLDivElement, ItemTemplateProps>(
+export const Item = forwardRef<HTMLDivElement, ItemProps>(
   (
-    {
-      icon: Icon,
-      text,
-      url,
-      disabled,
-      isDragging,
-      isOverlay,
-      style,
-      attributes,
-      listeners,
-    },
+    { card, disabled, isDragging, isOverlay, style, attributes, listeners },
     ref,
   ) => {
+    const { icon: Icon, text, url } = parseCardUrl(card);
     return (
       <Card
         // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
@@ -79,38 +96,8 @@ const ItemTemplate = forwardRef<HTMLDivElement, ItemTemplateProps>(
   },
 );
 
-type SortableItemProps = {
-  card: ValidCardRecord;
-  cardRef?: React.Ref<HTMLDivElement>;
-} & Omit<ItemTemplateProps, "icon" | "text" | "url">;
-
-export function Item({ card, cardRef, ...rest }: SortableItemProps) {
-  const templateProps = {
-    ref: cardRef,
-    ...rest,
-  };
-  if (DevMkizkaTestProfileBoard.isBlueskyProfileCard(card)) {
-    return (
-      <ItemTemplate
-        icon={BlueskyIcon}
-        text={`@${card.handle}`}
-        url={`https://bsky.app/profile/${card.handle}`}
-        {...templateProps}
-      />
-    );
-  }
-  return (
-    <ItemTemplate
-      icon={LinkIcon}
-      text={card.url}
-      url={card.url}
-      {...templateProps}
-    />
-  );
-}
-
 type SocialCardProps = {
-  card: ValidCardRecord;
+  card: CardScheme;
   listeners?: Listeners;
   disabled?: boolean;
 };
@@ -133,7 +120,7 @@ export function SortableItem({ card, disabled }: SocialCardProps) {
   return (
     <Item
       card={card}
-      cardRef={setNodeRef}
+      ref={setNodeRef}
       disabled={disabled}
       isDragging={isDragging}
       style={style}

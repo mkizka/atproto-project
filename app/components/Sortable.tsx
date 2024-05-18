@@ -19,13 +19,13 @@ import {
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 
-import type { ValidCardRecord } from "~/api/types";
+import type { CardScheme } from "~/api/validator";
 
 import { Item, SortableItem } from "./SortableItem";
 
 type Props = {
-  cards: ValidCardRecord[];
-  setCards: React.Dispatch<React.SetStateAction<ValidCardRecord[]>>;
+  cards: CardScheme[];
+  setCards: React.Dispatch<React.SetStateAction<CardScheme[]>>;
   sortable?: boolean;
 };
 

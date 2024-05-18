@@ -68,6 +68,9 @@ importers:
       lucide-react:
         specifier: ^0.378.0
         version: 0.378.0(react@18.3.1)
+      neverthrow:
+        specifier: ^6.2.1
+        version: 6.2.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -77,9 +80,12 @@ importers:
       tailwind-merge:
         specifier: ^2.3.0
         version: 2.3.0
-      valibot:
-        specifier: ^0.30.0
-        version: 0.30.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+      zod-validation-error:
+        specifier: ^3.3.0
+        version: 3.3.0(zod@3.23.8)
     devDependencies:
       '@atproto/bsky':
         specifier: ^0.0.52
@@ -88,8 +94,8 @@ importers:
         specifier: 0.3.2
         version: 0.3.2
       '@mkizka/eslint-config':
-        specifier: ^4.3.0
-        version: 4.3.0(@typescript-eslint/eslint-plugin@7.8.0(@typescript-eslint/parser@7.8.0(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5)
+        specifier: ^4.4.0
+        version: 4.4.0(@typescript-eslint/eslint-plugin@7.8.0(@typescript-eslint/parser@7.8.0(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5)
       '@remix-run/dev':
         specifier: ^2.9.1
         version: 2.9.1(@remix-run/react@2.9.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(@types/node@20.12.11)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.11))
@@ -815,8 +821,8 @@ packages:
   '@mdx-js/mdx@2.3.0':
     resolution: {integrity: sha512-jLuwRlz8DQfQNiUCJR50Y09CGPq3fLtmtUQfVrj79E0JWu3dvsVcxVIcfhR5h0iXu+/z++zDrYeiJqifRynJkA==}
 
-  '@mkizka/eslint-config@4.3.0':
-    resolution: {integrity: sha512-I31EL55A3CwNQWHxgfAZB8oJFzW/2DPo9CEhekZ+db2K5+/7fGsJiMlNmDFz8C2cC0x4E7Vh4yZwsYA2qlhkiA==}
+  '@mkizka/eslint-config@4.4.0':
+    resolution: {integrity: sha512-/PeC5NqQgif7RBOipKyXbIRrkyLnnIZ5Mj+i27ETZhc2DEITFbJdANJGJNEX/PXoRgGQiUJniMWB+xgVByunlQ==}
     peerDependencies:
       eslint: '>= 9'
 
@@ -2970,6 +2976,9 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
+  neverthrow@6.2.1:
+    resolution: {integrity: sha512-amlnNvPXmiUOmNsDfUngNWPdZYOmCUGExQy/kuPCmLbhrXVXIYhY4bnE4D3dWl7OMhSEr9NndUrl4aKGFhFIQg==}
+
   node-abi@3.62.0:
     resolution: {integrity: sha512-CPMcGa+y33xuL1E0TcNIu4YyaZCxnnvkVaEXrsosR3FxN+fV8xvb7Mzpb7IgKler10qeMkE6+Dp8qJhpzdq35g==}
     engines: {node: '>=10'}
@@ -4097,9 +4106,6 @@ packages:
     engines: {node: '>=8'}
     hasBin: true
 
-  valibot@0.30.0:
-    resolution: {integrity: sha512-5POBdbSkM+3nvJ6ZlyQHsggisfRtyT4tVTo1EIIShs6qCdXJnyWU5TJ68vr8iTg5zpOLjXLRiBqNx+9zwZz/rA==}
-
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
@@ -4254,8 +4260,14 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@3.23.7:
-    resolution: {integrity: sha512-NBeIoqbtOiUMomACV/y+V3Qfs9+Okr18vR5c/5pHClPpufWOrsx8TENboDPe265lFdfewX2yBtNTLPvnmCxwog==}
+  zod-validation-error@3.3.0:
+    resolution: {integrity: sha512-Syib9oumw1NTqEv4LT0e6U83Td9aVRk9iTXPUQr1otyV1PuXQKOvOwhMNqZIq5hluzHP2pMgnOmHEo7kPdI2mw==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      zod: ^3.18.0
+
+  zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -4331,21 +4343,21 @@ snapshots:
       graphemer: 1.4.0
       multiformats: 9.9.0
       uint8arrays: 3.0.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/common-web@0.3.0':
     dependencies:
       graphemer: 1.4.0
       multiformats: 9.9.0
       uint8arrays: 3.0.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/common@0.1.0':
     dependencies:
       '@ipld/dag-cbor': 7.0.3
       multiformats: 9.9.0
       pino: 8.21.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/common@0.4.0':
     dependencies:
@@ -4386,7 +4398,7 @@ snapshots:
       commander: 9.5.0
       ts-morph: 16.0.0
       yesno: 0.4.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/lexicon@0.3.3':
     dependencies:
@@ -4394,7 +4406,7 @@ snapshots:
       '@atproto/syntax': 0.2.1
       iso-datestring-validator: 2.2.2
       multiformats: 9.9.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/lexicon@0.4.0':
     dependencies:
@@ -4402,7 +4414,7 @@ snapshots:
       '@atproto/syntax': 0.3.0
       iso-datestring-validator: 2.2.2
       multiformats: 9.9.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/repo@0.4.0':
     dependencies:
@@ -4414,7 +4426,7 @@ snapshots:
       '@ipld/dag-cbor': 7.0.3
       multiformats: 9.9.0
       uint8arrays: 3.0.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@atproto/syntax@0.2.1':
     dependencies:
@@ -4434,7 +4446,7 @@ snapshots:
       rate-limiter-flexible: 2.4.2
       uint8arrays: 3.0.0
       ws: 8.17.0
-      zod: 3.23.7
+      zod: 3.23.8
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -4443,7 +4455,7 @@ snapshots:
   '@atproto/xrpc@0.5.0':
     dependencies:
       '@atproto/lexicon': 0.4.0
-      zod: 3.23.7
+      zod: 3.23.8
 
   '@babel/code-frame@7.24.2':
     dependencies:
@@ -4697,7 +4709,7 @@ snapshots:
       axios: 1.6.8
       multiformats: 9.9.0
       uint8arrays: 3.0.0
-      zod: 3.23.7
+      zod: 3.23.8
     transitivePeerDependencies:
       - debug
 
@@ -4992,7 +5004,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mkizka/eslint-config@4.3.0(@typescript-eslint/eslint-plugin@7.8.0(@typescript-eslint/parser@7.8.0(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5)':
+  '@mkizka/eslint-config@4.4.0(@typescript-eslint/eslint-plugin@7.8.0(@typescript-eslint/parser@7.8.0(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5))(eslint@9.2.0)(typescript@5.4.5)':
     dependencies:
       '@dword-design/eslint-plugin-import-alias': 5.0.0
       '@eslint/js': 9.2.0
@@ -7464,6 +7476,8 @@ snapshots:
 
   negotiator@0.6.3: {}
 
+  neverthrow@6.2.1: {}
+
   node-abi@3.62.0:
     dependencies:
       semver: 7.6.1
@@ -8674,8 +8688,6 @@ snapshots:
       kleur: 4.1.5
       sade: 1.8.1
 
-  valibot@0.30.0: {}
-
   validate-npm-package-license@3.0.4:
     dependencies:
       spdx-correct: 3.2.0
@@ -8804,6 +8816,10 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@3.23.7: {}
+  zod-validation-error@3.3.0(zod@3.23.8):
+    dependencies:
+      zod: 3.23.8
+
+  zod@3.23.8: {}
 
   zwitch@2.0.4: {}

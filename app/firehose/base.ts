@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { ids, lexicons } from "@atproto/bsky/dist/lexicon/lexicons.js";
 import type { OutputSchema } from "@atproto/bsky/dist/lexicon/types/com/atproto/sync/subscribeRepos.js";
 import { isCommit } from "@atproto/bsky/dist/lexicon/types/com/atproto/sync/subscribeRepos.js";
