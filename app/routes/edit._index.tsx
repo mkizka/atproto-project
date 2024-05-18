@@ -18,11 +18,11 @@ export { HydrateFallback } from "~/components/HydrateFallback";
 
 export default function Index() {
   const { profile, board } = useLoaderData<typeof clientLoader>();
-  if (profile.isErr()) {
-    throw profile.error;
-  }
-  if (board.isErr()) {
-    throw board.error;
-  }
-  return <Board profile={profile.value} board={board.value} editable />;
+  return (
+    <Board
+      profile={profile._unsafeUnwrap()}
+      board={board._unsafeUnwrap()}
+      editable
+    />
+  );
 }
