@@ -74,9 +74,10 @@ export function Modal({ onSubmit, ...props }: Props) {
         <DialogTrigger asChild>
           <Card
             as="button"
-            className="flex h-16 items-center justify-center hover:opacity-70"
+            className="flex h-16 items-center justify-center gap-2 text-muted-foreground hover:opacity-70"
           >
-            <CirclePlus className="stroke-current text-muted-foreground" />
+            <CirclePlus className="stroke-current" />
+            <p className="mr-6">カードを追加</p>
           </Card>
         </DialogTrigger>
       )}
