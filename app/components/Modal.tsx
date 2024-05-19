@@ -1,5 +1,6 @@
 import type { DialogProps } from "@radix-ui/react-dialog";
 import { CirclePlus } from "lucide-react";
+import type { FormEvent } from "react";
 import { useRef } from "react";
 
 import { Button } from "./shadcn/ui/button";
@@ -19,8 +20,32 @@ type Props = {
   onSubmit: (input: string) => void;
 } & DialogProps;
 
+const safeUrl = (url: string) => {
+  try {
+    return new URL(url);
+  } catch {
+    return null;
+  }
+};
+
 export function Modal({ onSubmit, ...props }: Props) {
   const ref = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!ref.current) {
+      alert("予期せぬエラー");
+      return;
+    }
+    const url = safeUrl(ref.current.value);
+    if (!url) {
+      alert("URLが不正です");
+      return;
+    }
+    onSubmit(ref.current.value);
+    ref.current.value = "";
+  };
+
   return (
     <Dialog {...props}>
       {!props.open && (
@@ -34,16 +59,7 @@ export function Modal({ onSubmit, ...props }: Props) {
         </DialogTrigger>
       )}
       <DialogContent className="top-48 max-w-[90vw] sm:max-w-[600px]">
-        <form
-          className="grid gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (ref.current) {
-              onSubmit(ref.current.value);
-              ref.current.value = "";
-            }
-          }}
-        >
+        <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>URLを追加</DialogTitle>
             <DialogDescription>Bluesky以外のURLも使えます</DialogDescription>
