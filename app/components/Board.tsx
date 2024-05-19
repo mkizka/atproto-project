@@ -19,6 +19,10 @@ export function Board({ profile, board, editable }: Props) {
   const [open, setOpen] = useState(false);
   const [cards, setCards] = useState<CardScheme[]>(board.cards ?? []);
 
+  const removeCard = (id: string) => {
+    setCards(cards.filter((card) => card.id !== id));
+  };
+
   const handleSubmit = (input: string) => {
     setCards([...cards, { id: crypto.randomUUID(), url: input }]);
     setOpen(false);
@@ -46,7 +50,12 @@ export function Board({ profile, board, editable }: Props) {
             </div>
           )}
           <div className="flex flex-col gap-2">
-            <Sortable cards={cards} setCards={setCards} sortable={editable} />
+            <Sortable
+              cards={cards}
+              setCards={setCards}
+              removeCard={removeCard}
+              sortable={editable}
+            />
             {editable && (
               <Modal
                 open={open}

@@ -26,10 +26,11 @@ import { Item, SortableItem } from "./SortableItem";
 type Props = {
   cards: CardScheme[];
   setCards: React.Dispatch<React.SetStateAction<CardScheme[]>>;
+  removeCard: (id: string) => void;
   sortable?: boolean;
 };
 
-export function Sortable({ cards, setCards, sortable }: Props) {
+export function Sortable({ cards, setCards, removeCard, sortable }: Props) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const activeCard = cards.find((card) => card.id === activeId);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
@@ -59,7 +60,12 @@ export function Sortable({ cards, setCards, sortable }: Props) {
     >
       <SortableContext items={cards} strategy={verticalListSortingStrategy}>
         {cards.map((card) => (
-          <SortableItem key={card.id} card={card} disabled={!sortable} />
+          <SortableItem
+            key={card.id}
+            card={card}
+            removeCard={removeCard}
+            disabled={!sortable}
+          />
         ))}
       </SortableContext>
       <DragOverlay>

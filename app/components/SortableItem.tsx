@@ -1,7 +1,7 @@
 import type { DraggableAttributes } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, LinkIcon } from "lucide-react";
+import { GripVertical, LinkIcon, X } from "lucide-react";
 import { type FC, forwardRef } from "react";
 
 import type { CardScheme } from "~/api/validator";
@@ -46,6 +46,7 @@ type Listeners = Record<string, Function>;
 
 type ItemProps = {
   card: CardScheme;
+  removeCard?: (id: string) => void;
   disabled?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
@@ -56,7 +57,16 @@ type ItemProps = {
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
   (
-    { card, disabled, isDragging, isOverlay, style, attributes, listeners },
+    {
+      card,
+      removeCard,
+      disabled,
+      isDragging,
+      isOverlay,
+      style,
+      attributes,
+      listeners,
+    },
     ref,
   ) => {
     const { icon: Icon, text, url } = parseCardUrl(card);
@@ -64,26 +74,24 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
       <Card
         // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
         // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
-        className={cn(
-          "flex w-full items-center h-16 touch-none hover:opacity-70",
-          {
-            "opacity-30": isDragging,
-            // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
-            "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
-            // DragOverlayで使用する場合はhoverを無効化
-            "hover:opacity-100": isOverlay,
-          },
-        )}
+        className={cn("flex w-full items-center h-16 touch-none", {
+          "opacity-30": isDragging,
+          // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
+          "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
+        })}
         ref={ref}
         style={style}
         {...attributes}
       >
-        <a className="flex min-w-0 flex-1 items-center gap-4 p-4" href={url}>
+        <a
+          className="flex min-w-0 flex-1 items-center gap-4 p-4 hover:opacity-70"
+          href={url}
+        >
           <Icon className="size-8" />
           <p className="flex-1 truncate">{text}</p>
         </a>
         {!disabled && (
-          <div className="p-4">
+          <div className="flex gap-2 p-4">
             <Button
               variant="ghost"
               size="icon"
@@ -91,6 +99,14 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
               {...listeners}
             >
               <GripVertical className="fill-current text-muted-foreground" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="ml-auto size-8"
+              onClick={() => removeCard?.(card.id)}
+            >
+              <X className="fill-current text-destructive" />
             </Button>
           </div>
         )}
@@ -101,11 +117,12 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
 
 type SocialCardProps = {
   card: CardScheme;
+  removeCard: (id: string) => void;
   listeners?: Listeners;
   disabled?: boolean;
 };
 
-export function SortableItem({ card, disabled }: SocialCardProps) {
+export function SortableItem({ card, removeCard, disabled }: SocialCardProps) {
   const {
     attributes,
     listeners,
@@ -126,6 +143,7 @@ export function SortableItem({ card, disabled }: SocialCardProps) {
   return (
     <Item
       card={card}
+      removeCard={removeCard}
       ref={setNodeRef}
       disabled={disabled}
       isDragging={isDragging}
