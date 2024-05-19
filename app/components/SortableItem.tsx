@@ -68,8 +68,8 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           "flex w-full items-center h-16 touch-none hover:opacity-70",
           {
             "opacity-30": isDragging,
-            // DragOverlayは105%に拡大しておき100%→105%の拡大アニメーションをつける
-            "animate-in zoom-in-100 scale-105 shadow-2xl": isOverlay,
+            // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
+            "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
             // DragOverlayで使用する場合はhoverを無効化
             "hover:opacity-100": isOverlay,
           },
@@ -87,7 +87,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
             <Button
               variant="ghost"
               size="icon"
-              className="ml-auto"
+              className="ml-auto size-8"
               {...listeners}
             >
               <GripVertical className="fill-current text-muted-foreground" />
