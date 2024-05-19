@@ -80,7 +80,7 @@ export function Modal({ onSubmit, ...props }: Props) {
           </Card>
         </DialogTrigger>
       )}
-      <DialogContent className="top-48 max-w-[90vw] gap-2 sm:max-w-[600px]">
+      <DialogContent className="top-48 max-w-[90vw] gap-4 sm:max-w-[600px]">
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>URLを追加</DialogTitle>
