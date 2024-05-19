@@ -97,6 +97,7 @@ export function Modal({ onSubmit, ...props }: Props) {
           </DialogHeader>
           <Input
             id="url"
+            type="url"
             ref={ref}
             placeholder="https://bsky.app/profile/..."
             className="w-full"
@@ -113,7 +114,7 @@ export function Modal({ onSubmit, ...props }: Props) {
             <Button type="submit">追加</Button>
           </DialogFooter>
         </form>
-        <p className="text-end text-sm text-muted-foreground">
+        <p className="text-balance text-end text-sm text-muted-foreground">
           「コピーしたURLを追加」を使うにはクリップボードの許可が必要です
         </p>
       </DialogContent>
