@@ -1,6 +1,7 @@
 import type { DialogProps } from "@radix-ui/react-dialog";
 import { CirclePlus } from "lucide-react";
-import { err, ok, Result, ResultAsync } from "neverthrow";
+import type { Result } from "neverthrow";
+import { err, ok, ResultAsync } from "neverthrow";
 import type { FormEvent } from "react";
 import { useRef } from "react";
 
@@ -27,26 +28,25 @@ const truncate = (text: string, length: number) => {
 
 const readClipboard = ResultAsync.fromThrowable(
   () => navigator.clipboard.readText(),
-  () => new Error("クリップボードから読み込めませんでした"),
+  () => "クリップボードから読み込めませんでした",
 );
 
-const parseUrl = Result.fromThrowable<(text: string) => string, Error>(
-  (text) => {
-    try {
-      return new URL(text).toString();
-    } catch (e) {
-      throw new Error(
-        `コピーしている文字がURLではありませんでした: ${truncate(text, 20)}`,
-      );
-    }
-  },
-);
+const validateClipboard = (text: string) => {
+  if (!text) return err("何もコピーしていませんでした");
+  try {
+    return ok(new URL(text).toString());
+  } catch (e) {
+    return err(
+      `コピーしている文字がURLではありませんでした: ${truncate(text, 20)}`,
+    );
+  }
+};
 
-const confirmToAdd = (url: string): Result<string, Error> => {
+const confirmToAdd = (url: string): Result<string, string> => {
   if (confirm(`${url} を追加しますか？`)) {
     return ok(url);
   }
-  return err(new Error("キャンセルされました"));
+  return err("キャンセルされました");
 };
 
 export function Modal({ onSubmit, ...props }: Props) {
@@ -60,11 +60,11 @@ export function Modal({ onSubmit, ...props }: Props) {
 
   const handleSubmitFromClipboard = () => {
     void readClipboard()
-      .andThen(parseUrl)
+      .andThen(validateClipboard)
       .andThen(confirmToAdd)
       .match(
         (url) => onSubmit(url),
-        (err) => alert(err.message),
+        (err) => alert(err),
       );
   };
 
