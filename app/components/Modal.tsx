@@ -1,5 +1,6 @@
 import type { DialogProps } from "@radix-ui/react-dialog";
 import { CirclePlus } from "lucide-react";
+import { err, ok, Result, ResultAsync } from "neverthrow";
 import type { FormEvent } from "react";
 import { useRef } from "react";
 
@@ -20,24 +21,32 @@ type Props = {
   onSubmit: (input: string) => void;
 } & DialogProps;
 
-const safeUrl = (url: string) => {
-  try {
-    return new URL(url);
-  } catch {
-    return null;
-  }
-};
-
 const truncate = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
 };
 
-const readClipboard = async () => {
-  try {
-    return await navigator.clipboard.readText();
-  } catch {
-    return null;
+const readClipboard = ResultAsync.fromThrowable(
+  () => navigator.clipboard.readText(),
+  () => new Error("クリップボードから読み込めませんでした"),
+);
+
+const parseUrl = Result.fromThrowable<(text: string) => string, Error>(
+  (text) => {
+    try {
+      return new URL(text).toString();
+    } catch (e) {
+      throw new Error(
+        `コピーしている文字がURLではありませんでした: ${truncate(text, 20)}`,
+      );
+    }
+  },
+);
+
+const confirmToAdd = (url: string): Result<string, Error> => {
+  if (confirm(`${url} を追加しますか？`)) {
+    return ok(url);
   }
+  return err(new Error("キャンセルされました"));
 };
 
 export function Modal({ onSubmit, ...props }: Props) {
@@ -45,36 +54,18 @@ export function Modal({ onSubmit, ...props }: Props) {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!ref.current) {
-      alert("予期せぬエラー");
-      return;
-    }
-    const url = safeUrl(ref.current.value);
-    if (!url) {
-      alert("URLが不正です");
-      return;
-    }
-    onSubmit(ref.current.value);
-    ref.current.value = "";
+    onSubmit(ref.current!.value);
+    ref.current!.value = "";
   };
 
-  const handleSubmitFromClipboard = async () => {
-    const clipboard = await readClipboard();
-    if (!clipboard) {
-      alert("クリップボードから読み込めませんでした");
-      return;
-    }
-    const url = safeUrl(clipboard);
-    if (!url) {
-      alert(
-        `コピーされた文字がURLではありませんでした: ${truncate(clipboard, 20)}`,
+  const handleSubmitFromClipboard = () => {
+    void readClipboard()
+      .andThen(parseUrl)
+      .andThen(confirmToAdd)
+      .match(
+        (url) => onSubmit(url),
+        (err) => alert(err.message),
       );
-      return;
-    }
-    const ok = confirm(`${clipboard} を追加しますか？`);
-    if (ok) {
-      onSubmit(clipboard);
-    }
   };
 
   return (
