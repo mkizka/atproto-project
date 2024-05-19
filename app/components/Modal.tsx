@@ -23,14 +23,16 @@ export function Modal({ onSubmit, ...props }: Props) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <Dialog {...props}>
-      <DialogTrigger asChild>
-        <Card
-          as="button"
-          className="flex h-16 items-center justify-center hover:opacity-70"
-        >
-          <CirclePlus className="stroke-current text-muted-foreground" />
-        </Card>
-      </DialogTrigger>
+      {!props.open && (
+        <DialogTrigger asChild>
+          <Card
+            as="button"
+            className="flex h-16 items-center justify-center animate-in zoom-in-90 hover:opacity-70"
+          >
+            <CirclePlus className="stroke-current text-muted-foreground" />
+          </Card>
+        </DialogTrigger>
+      )}
       <DialogContent className="top-48 max-w-[90vw] sm:max-w-[600px]">
         <form
           className="grid gap-4"

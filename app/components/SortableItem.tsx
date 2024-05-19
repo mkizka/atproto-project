@@ -64,23 +64,26 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
       <Card
         // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
         // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
-        className={cn("flex h-16 touch-none hover:opacity-70", {
-          "opacity-30": isDragging,
-          // DragOverlayは105%に拡大しておき100%→105%の拡大アニメーションをつける
-          "animate-in zoom-in-100 scale-105 shadow-2xl": isOverlay,
-          // DragOverlayで使用する場合はhoverを無効化
-          "hover:opacity-100": isOverlay,
-        })}
+        className={cn(
+          "flex w-full items-center h-16 touch-none hover:opacity-70",
+          {
+            "opacity-30": isDragging,
+            // DragOverlayは105%に拡大しておき100%→105%の拡大アニメーションをつける
+            "animate-in zoom-in-100 scale-105 shadow-2xl": isOverlay,
+            // DragOverlayで使用する場合はhoverを無効化
+            "hover:opacity-100": isOverlay,
+          },
+        )}
         ref={ref}
         style={style}
         {...attributes}
       >
-        <a className="flex size-full items-center gap-4 p-4" href={url}>
+        <a className="flex min-w-0 flex-1 items-center gap-4 p-4" href={url}>
           <Icon className="size-8" />
-          <p>{text}</p>
+          <p className="flex-1 truncate">{text}</p>
         </a>
         {!disabled && (
-          <div className="flex items-center justify-center p-4">
+          <div className="p-4">
             <Button
               variant="ghost"
               size="icon"
