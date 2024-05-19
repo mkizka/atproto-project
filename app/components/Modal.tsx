@@ -71,7 +71,8 @@ export function Modal({ onSubmit, ...props }: Props) {
       );
       return;
     }
-    if (confirm(`${clipboard} を追加しますか？`)) {
+    const ok = confirm(`${clipboard} を追加しますか？`);
+    if (ok) {
       onSubmit(clipboard);
     }
   };
@@ -82,7 +83,7 @@ export function Modal({ onSubmit, ...props }: Props) {
         <DialogTrigger asChild>
           <Card
             as="button"
-            className="flex h-16 items-center justify-center animate-in zoom-in-90 hover:opacity-70"
+            className="flex h-16 items-center justify-center hover:opacity-70"
           >
             <CirclePlus className="stroke-current text-muted-foreground" />
           </Card>

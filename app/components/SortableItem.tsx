@@ -73,6 +73,8 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
     const { icon: Icon, text, url } = parseCardUrl(card);
 
     const handleRemove = () => {
+      const ok = confirm(`「${text}」を削除しますか？`);
+      if (!ok) return;
       setIsRemoving(true);
       setTimeout(() => {
         removeCard?.(card.id);
