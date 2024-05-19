@@ -28,6 +28,18 @@ const safeUrl = (url: string) => {
   }
 };
 
+const truncate = (text: string, length: number) => {
+  return text.length > length ? text.slice(0, length) + "..." : text;
+};
+
+const readClipboard = async () => {
+  try {
+    return await navigator.clipboard.readText();
+  } catch {
+    return null;
+  }
+};
+
 export function Modal({ onSubmit, ...props }: Props) {
   const ref = useRef<HTMLInputElement>(null);
 
@@ -46,6 +58,24 @@ export function Modal({ onSubmit, ...props }: Props) {
     ref.current.value = "";
   };
 
+  const handleSubmitFromClipboard = async () => {
+    const clipboard = await readClipboard();
+    if (!clipboard) {
+      alert("クリップボードから読み込めませんでした");
+      return;
+    }
+    const url = safeUrl(clipboard);
+    if (!url) {
+      alert(
+        `コピーされた文字がURLではありませんでした: ${truncate(clipboard, 20)}`,
+      );
+      return;
+    }
+    if (confirm(`${clipboard} を追加しますか？`)) {
+      onSubmit(clipboard);
+    }
+  };
+
   return (
     <Dialog {...props}>
       {!props.open && (
@@ -58,7 +88,7 @@ export function Modal({ onSubmit, ...props }: Props) {
           </Card>
         </DialogTrigger>
       )}
-      <DialogContent className="top-48 max-w-[90vw] sm:max-w-[600px]">
+      <DialogContent className="top-48 max-w-[90vw] gap-2 sm:max-w-[600px]">
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>URLを追加</DialogTitle>
@@ -72,9 +102,19 @@ export function Modal({ onSubmit, ...props }: Props) {
             required
           />
           <DialogFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleSubmitFromClipboard}
+            >
+              コピーしたURLを追加
+            </Button>
             <Button type="submit">追加</Button>
           </DialogFooter>
         </form>
+        <p className="text-end text-sm text-muted-foreground">
+          「コピーしたURLを追加」を使うにはクリップボードの許可が必要です
+        </p>
       </DialogContent>
     </Dialog>
   );
