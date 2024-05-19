@@ -2,7 +2,7 @@ import type { DraggableAttributes } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, LinkIcon, X } from "lucide-react";
-import { type FC, forwardRef } from "react";
+import { type FC, forwardRef, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
@@ -69,7 +69,16 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
     },
     ref,
   ) => {
+    const [isRemoving, setIsRemoving] = useState(false);
     const { icon: Icon, text, url } = parseCardUrl(card);
+
+    const handleRemove = () => {
+      setIsRemoving(true);
+      setTimeout(() => {
+        removeCard?.(card.id);
+      }, 200);
+    };
+
     return (
       <Card
         // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
@@ -78,6 +87,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           "opacity-30": isDragging,
           // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
           "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
+          "animate-out zoom-out-90 fade-out duration-300": isRemoving,
         })}
         ref={ref}
         style={style}
@@ -104,7 +114,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
               variant="ghost"
               size="icon"
               className="ml-auto size-8"
-              onClick={() => removeCard?.(card.id)}
+              onClick={handleRemove}
             >
               <X className="fill-current text-destructive" />
             </Button>
