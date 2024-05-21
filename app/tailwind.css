@@ -74,3 +74,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 自動で挿入されるスタイルの一部を打ち消す */
+.bluesky-embed {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}

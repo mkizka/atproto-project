@@ -29,12 +29,17 @@ const isBlueskyPostUrl = (hostname: string, paths: string[]) => {
   );
 };
 
-type ParsedCard = {
-  type: "link" | "embed";
-  icon: FC<React.SVGProps<SVGSVGElement>>;
-  text: string;
-  url: string;
-};
+type ParsedCard =
+  | {
+      type: "link";
+      icon: FC<React.SVGProps<SVGSVGElement>>;
+      text: string;
+      url: string;
+    }
+  | {
+      type: "embed";
+      blueskyUri: string;
+    };
 
 const parseCard = (card: CardScheme): ParsedCard => {
   const url = new URL(card.url);
@@ -42,9 +47,9 @@ const parseCard = (card: CardScheme): ParsedCard => {
   if (isBlueskyPostUrl(url.hostname, paths)) {
     return {
       type: "embed",
-      icon: BlueskyIcon,
-      text: card.url,
-      url: card.url,
+      // TODO: 修正
+      blueskyUri:
+        "at://did:plc:4gow62pk3vqpuwiwaslcwisa/app.bsky.feed.post/3ksyp4qfpiz2t",
     };
   }
   if (isBlueskyProfileUrl(url.hostname, paths)) {
@@ -65,25 +70,23 @@ const parseCard = (card: CardScheme): ParsedCard => {
 
 type ItemInnerProps = {
   card: CardScheme;
-  isOverlay?: boolean;
 };
 
-function ItemInner({ card, isOverlay }: ItemInnerProps) {
+function ItemInner({ card }: ItemInnerProps) {
   const parsed = parseCard(card);
-  const shouldEmbed = !isOverlay && parsed.type === "embed";
 
   useEffect(() => {
-    if (shouldEmbed) {
+    if (parsed.type === "embed") {
       window.bluesky?.scan?.();
     }
   }, [parsed.type]);
 
-  if (shouldEmbed) {
+  if (parsed.type === "embed") {
     return (
       <div className="relative size-full">
         {/* クリック領域に被せて並び替え可能にする */}
         <div className="absolute size-full" />
-        <blockquote data-bluesky-uri="at://did:plc:4gow62pk3vqpuwiwaslcwisa/app.bsky.feed.post/3ksyp4qfpiz2t" />
+        <blockquote data-bluesky-uri={parsed.blueskyUri} />
         <LoaderCircle className="absolute inset-0 -z-10 m-auto size-8 animate-spin stroke-current text-muted-foreground" />
       </div>
     );
@@ -142,18 +145,17 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
         })}
         ref={ref}
       >
-        <ItemInner card={card} isOverlay={isOverlay} />
+        <ItemInner card={card} />
         {!disabled && (
-          <div className="absolute right-0 flex gap-2 p-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ml-auto size-8"
-              onClick={handleRemove}
-            >
-              <X className="fill-current text-destructive" />
-            </Button>
-          </div>
+          // TODO: 押せないので直す
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute -right-5 -top-2 ml-auto size-12"
+            onClick={handleRemove}
+          >
+            <X className="fill-current text-destructive" />
+          </Button>
         )}
       </div>
     );
