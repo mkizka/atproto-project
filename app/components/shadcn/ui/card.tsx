@@ -4,7 +4,7 @@ import { cn } from "~/utils/cn";
 
 type AsType = "div" | "button";
 
-type CardProps<T extends AsType = "div"> = {
+export type CardProps<T extends AsType = "div"> = {
   as?: T;
 } & React.ComponentProps<T>;
 

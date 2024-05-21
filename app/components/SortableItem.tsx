@@ -1,7 +1,7 @@
-import type { DraggableAttributes } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, LinkIcon, X } from "lucide-react";
+import { LinkIcon, X } from "lucide-react";
+import type { ReactNode } from "react";
 import { type FC, forwardRef, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
@@ -9,6 +9,7 @@ import { cn } from "~/utils/cn";
 
 import { BlueskyIcon } from "./board/icons/BlueskyIcon";
 import { Button } from "./shadcn/ui/button";
+import type { CardProps } from "./shadcn/ui/card";
 import { Card } from "./shadcn/ui/card";
 
 const isBlueskyProfileUrl = (hostname: string, paths: string[]) => {
@@ -40,40 +41,49 @@ const parseCardUrl = (
   };
 };
 
+type ItemInnerProps = {
+  card: CardScheme;
+};
+
+function ItemInner({ card }: ItemInnerProps) {
+  const parsed = parseCardUrl(card);
+  if (parsed) {
+    return (
+      <a
+        className="flex min-w-0 flex-1 items-center gap-4 p-4 hover:opacity-70"
+        href={parsed.url}
+      >
+        <parsed.icon className="size-8" />
+        <p className="flex-1 truncate">{parsed.text}</p>
+      </a>
+    );
+  }
+  // TODO: 投稿を埋め込むパターンに対応する
+  throw new Error("Not Implemented");
+}
+
 // @dnd-kitのlistenersの型
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Listeners = Record<string, Function>;
 
 type ItemProps = {
   card: CardScheme;
+  children?: ReactNode;
   removeCard?: (id: string) => void;
   disabled?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
-  style?: React.CSSProperties;
-  attributes?: DraggableAttributes;
-  listeners?: Listeners;
-};
+} & CardProps<"div">;
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
   (
-    {
-      card,
-      removeCard,
-      disabled,
-      isDragging,
-      isOverlay,
-      style,
-      attributes,
-      listeners,
-    },
+    { card, removeCard, disabled, isDragging, isOverlay, ref: _, ...cardProps },
     ref,
   ) => {
     const [isRemoving, setIsRemoving] = useState(false);
-    const { icon: Icon, text, url } = parseCardUrl(card);
 
     const handleRemove = () => {
-      const ok = confirm(`「${text}」を削除しますか？`);
+      const ok = confirm(`${card.url} を削除しますか？`);
       if (!ok) return;
       setIsRemoving(true);
       setTimeout(() => {
@@ -92,26 +102,11 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           "animate-out zoom-out-90 fade-out duration-300": isRemoving,
         })}
         ref={ref}
-        style={style}
-        {...attributes}
+        {...cardProps}
       >
-        <a
-          className="flex min-w-0 flex-1 items-center gap-4 p-4 hover:opacity-70"
-          href={url}
-        >
-          <Icon className="size-8" />
-          <p className="flex-1 truncate">{text}</p>
-        </a>
+        <ItemInner card={card} />
         {!disabled && (
           <div className="flex gap-2 p-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ml-auto size-8"
-              {...listeners}
-            >
-              <GripVertical className="fill-current text-muted-foreground" />
-            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -160,8 +155,8 @@ export function SortableItem({ card, removeCard, disabled }: SocialCardProps) {
       disabled={disabled}
       isDragging={isDragging}
       style={style}
-      attributes={attributes}
-      listeners={listeners}
+      {...attributes}
+      {...listeners}
     />
   );
 }
