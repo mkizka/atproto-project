@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { cn } from "~/utils/cn";
 
-type AsType = "div" | "button";
+type AsType = "a" | "div" | "button";
 
 export type CardProps<T extends AsType = "div"> = {
   as?: T;

@@ -10,6 +10,10 @@ const config = {
   ],
   prefix: "",
   theme: {
+    screens: {
+      // Blueskyの埋め込みカードのサイズに合わせる
+      sm: "600px",
+    },
     container: {
       center: true,
       padding: "2rem",
