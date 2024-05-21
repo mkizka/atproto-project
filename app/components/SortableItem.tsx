@@ -2,7 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { LinkIcon, LoaderCircle, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { type FC, forwardRef, useEffect, useRef, useState } from "react";
+import { type FC, forwardRef, useEffect, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
@@ -29,17 +29,12 @@ const isBlueskyPostUrl = (hostname: string, paths: string[]) => {
   );
 };
 
-type ParsedCard =
-  | {
-      type: "link";
-      icon: FC<React.SVGProps<SVGSVGElement>>;
-      text: string;
-      url: string;
-    }
-  | {
-      type: "embed";
-      url: string;
-    };
+type ParsedCard = {
+  type: "link" | "embed";
+  icon: FC<React.SVGProps<SVGSVGElement>>;
+  text: string;
+  url: string;
+};
 
 const parseCard = (card: CardScheme): ParsedCard => {
   const url = new URL(card.url);
@@ -47,6 +42,8 @@ const parseCard = (card: CardScheme): ParsedCard => {
   if (isBlueskyPostUrl(url.hostname, paths)) {
     return {
       type: "embed",
+      icon: BlueskyIcon,
+      text: card.url,
       url: card.url,
     };
   }
@@ -54,7 +51,7 @@ const parseCard = (card: CardScheme): ParsedCard => {
     return {
       type: "link",
       icon: BlueskyIcon,
-      text: paths[2],
+      text: `@${paths[2]}`,
       url: card.url,
     };
   }
@@ -68,29 +65,23 @@ const parseCard = (card: CardScheme): ParsedCard => {
 
 type ItemInnerProps = {
   card: CardScheme;
+  isOverlay?: boolean;
 };
 
-function ItemInner({ card }: ItemInnerProps) {
-  const id = useRef(crypto.randomUUID());
+function ItemInner({ card, isOverlay }: ItemInnerProps) {
   const parsed = parseCard(card);
+  const shouldEmbed = !isOverlay && parsed.type === "embed";
 
   useEffect(() => {
-    if (parsed.type !== "embed") return;
-    const script = document.createElement("script");
-    script.id = id.current;
-    script.src = "https://embed.bsky.app/static/embed.js";
-    script.async = true;
-
-    document.body.appendChild(script);
-    return () => {
-      document.getElementById(id.current)?.remove();
-    };
-    // TODO: eslint-plugin-reactとか入れる
+    if (shouldEmbed) {
+      window.bluesky?.scan?.();
+    }
   }, [parsed.type]);
 
-  if (parsed.type === "embed") {
+  if (shouldEmbed) {
     return (
       <div className="relative size-full">
+        {/* クリック領域に被せて並び替え可能にする */}
         <div className="absolute size-full" />
         <blockquote data-bluesky-uri="at://did:plc:4gow62pk3vqpuwiwaslcwisa/app.bsky.feed.post/3ksyp4qfpiz2t" />
         <LoaderCircle className="absolute inset-0 -z-10 m-auto size-8 animate-spin stroke-current text-muted-foreground" />
@@ -151,7 +142,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
         })}
         ref={ref}
       >
-        <ItemInner card={card} />
+        <ItemInner card={card} isOverlay={isOverlay} />
         {!disabled && (
           <div className="absolute right-0 flex gap-2 p-4">
             <Button

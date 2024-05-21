@@ -26,6 +26,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <script async src="https://embed.bsky.app/static/embed.js"></script>
       </body>
     </html>
   );
