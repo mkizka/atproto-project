@@ -183,7 +183,7 @@ export function SortableItem({ card, removeCard, disabled }: SocialCardProps) {
   });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   };
 
