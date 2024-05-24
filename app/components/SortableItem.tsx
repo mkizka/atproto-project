@@ -6,28 +6,12 @@ import { type FC, forwardRef, useEffect, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
+import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/urls";
 
 import { BlueskyIcon } from "./board/icons/BlueskyIcon";
 import { Button } from "./shadcn/ui/button";
 import type { CardProps } from "./shadcn/ui/card";
 import { Card } from "./shadcn/ui/card";
-
-// https://bsky.app/profile/example.com
-const isBlueskyProfileUrl = (hostname: string, paths: string[]) => {
-  return (
-    hostname === "bsky.app" && paths[1] === "profile" && paths.length === 3
-  );
-};
-
-// https://bsky.app/profile/example.com/post/12345...
-const isBlueskyPostUrl = (hostname: string, paths: string[]) => {
-  return (
-    hostname === "bsky.app" &&
-    paths[1] === "profile" &&
-    paths[3] === "post" &&
-    paths.length === 5
-  );
-};
 
 type ParsedCard =
   | {
@@ -43,20 +27,17 @@ type ParsedCard =
 
 const parseCard = (card: CardScheme): ParsedCard => {
   const url = new URL(card.url);
-  const paths = url.pathname.split("/");
-  if (isBlueskyPostUrl(url.hostname, paths)) {
+  if (isBlueskyPostUrl(url)) {
     return {
       type: "embed",
-      // TODO: 修正
-      blueskyUri:
-        "at://did:plc:4gow62pk3vqpuwiwaslcwisa/app.bsky.feed.post/3ksyp4qfpiz2t",
+      blueskyUri: atUri(url),
     };
   }
-  if (isBlueskyProfileUrl(url.hostname, paths)) {
+  if (isBlueskyProfileUrl(url)) {
     return {
       type: "link",
       icon: BlueskyIcon,
-      text: `@${paths[2]}`,
+      text: `@${url.pathname.split("/")[2]}`,
       url: card.url,
     };
   }

@@ -1,9 +1,11 @@
 import type { DialogProps } from "@radix-ui/react-dialog";
 import { CirclePlus } from "lucide-react";
 import type { Result } from "neverthrow";
-import { err, ok, ResultAsync } from "neverthrow";
+import { err, ok, okAsync, ResultAsync } from "neverthrow";
 import type { FormEvent } from "react";
 import { useRef } from "react";
+
+import { resolveHandleIfNeeded } from "~/utils/urls";
 
 import { Button } from "./shadcn/ui/button";
 import { Card } from "./shadcn/ui/card";
@@ -34,13 +36,18 @@ const readClipboard = ResultAsync.fromThrowable(
 const validateClipboard = (text: string) => {
   if (!text) return err("何もコピーしていませんでした");
   try {
-    return ok(new URL(text).toString());
+    return ok(new URL(text));
   } catch (e) {
     return err(
       `コピーしている文字がURLではありませんでした: ${truncate(text, 20)}`,
     );
   }
 };
+
+const resolveHandleInUrl = ResultAsync.fromThrowable(
+  (url: URL) => resolveHandleIfNeeded(url),
+  () => "URLに含まれているハンドルの解決に失敗しました",
+);
 
 const confirmToAdd = (url: string): Result<string, string> => {
   if (confirm(`${url} を追加しますか？`)) {
@@ -54,13 +61,21 @@ export function Modal({ onSubmit, ...props }: Props) {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSubmit(ref.current!.value);
-    ref.current!.value = "";
+    void okAsync(new URL(ref.current!.value))
+      .andThen(resolveHandleInUrl)
+      .match(
+        (url) => {
+          onSubmit(url);
+          ref.current!.value = "";
+        },
+        (err) => alert(err),
+      );
   };
 
   const handleSubmitFromClipboard = () => {
     void readClipboard()
       .andThen(validateClipboard)
+      .andThen(resolveHandleInUrl)
       .andThen(confirmToAdd)
       .match(
         (url) => onSubmit(url),
@@ -81,7 +96,7 @@ export function Modal({ onSubmit, ...props }: Props) {
           </Card>
         </DialogTrigger>
       )}
-      <DialogContent className="top-48 max-w-[90vw] gap-4 sm:max-w-[600px]">
+      <DialogContent className="top-48 max-w-[90vw] gap-4 sm:max-w-screen-sm">
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>URLを追加</DialogTitle>
