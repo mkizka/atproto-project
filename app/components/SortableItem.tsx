@@ -58,7 +58,7 @@ function ItemInner({ card }: ItemInnerProps) {
 
   useEffect(() => {
     if (parsed.type === "embed") {
-      window.bluesky?.scan?.();
+      // window.bluesky?.scan?.();
     }
   }, [parsed.type]);
 
@@ -126,6 +126,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
             "animate-out zoom-out-90 fade-out duration-300": isRemoving,
           })}
           ref={ref}
+          suppressHydrationWarning
         >
           <ItemInner card={card} />
         </div>
