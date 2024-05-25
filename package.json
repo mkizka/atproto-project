@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build": "remix vite:build",
-    "dev": "NODE_ENV=development tsx ./app/server.ts",
+    "dev": "NODE_ENV=development tsx watch --ignore vite.config.ts.* ./app/server.ts",
     "format": "prettier . --write && eslint . --fix",
     "postinstall": "tsx ./scripts/generate.ts",
     "prepare": "husky",

@@ -35,6 +35,9 @@ const build = viteDevServer
 
 app.all("*", createRequestHandler({ build: build as ServerBuild }));
 
+// TODO: Firehoseからボードを取得してSSRできるようにする
+// new FirehoseSubscription().run({ reconnectDelay: 1000 }).catch(console.error);
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   // eslint-disable-next-line no-console

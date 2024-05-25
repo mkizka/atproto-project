@@ -13,6 +13,8 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
 
+export { HydrateFallback } from "~/components/HydrateFallback";
+
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja">

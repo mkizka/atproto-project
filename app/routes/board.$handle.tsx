@@ -16,8 +16,6 @@ export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
   };
 }
 
-export { HydrateFallback } from "~/components/HydrateFallback";
-
 export default function Index() {
   const { profile, board } = useLoaderData<typeof clientLoader>();
   return (

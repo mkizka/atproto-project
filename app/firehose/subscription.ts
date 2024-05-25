@@ -1,11 +1,18 @@
+import { DevMkizkaTestProfileBoard } from "~/generated/api";
+
 import type { FirehoseOperation, RepoEvent } from "./base";
 import { FirehoseSubscriptionBase } from "./base";
 
-class FirehoseSubscription extends FirehoseSubscriptionBase {
+export class FirehoseSubscription extends FirehoseSubscriptionBase {
   handle(
     operations: FirehoseOperation[],
     event: RepoEvent,
   ): void | Promise<void> {
-    throw new Error("Method not implemented.");
+    for (const operation of operations) {
+      if (DevMkizkaTestProfileBoard.isRecord(operation.record)) {
+        // eslint-disable-next-line no-console
+        console.log("board operation", operation);
+      }
+    }
   }
 }
