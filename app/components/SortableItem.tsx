@@ -114,31 +114,32 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
     };
 
     return (
-      <div
-        {...cardProps}
-        // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
-        // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
-        className={cn("flex relative w-full items-center touch-none", {
-          "opacity-30": isDragging,
-          // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
-          "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
-          "animate-out zoom-out-90 fade-out duration-300": isRemoving,
-        })}
-        ref={ref}
-      >
-        <ItemInner card={card} />
+      <article className="relative">
+        <div
+          {...cardProps}
+          // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
+          // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
+          className={cn("flex w-full items-center touch-none", {
+            "opacity-30": isDragging,
+            // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
+            "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
+            "animate-out zoom-out-90 fade-out duration-300": isRemoving,
+          })}
+          ref={ref}
+        >
+          <ItemInner card={card} />
+        </div>
         {!disabled && (
-          // TODO: 押せないので直す
           <Button
             variant="outline"
             size="icon"
-            className="absolute -right-5 -top-2 ml-auto size-12"
+            className="absolute right-2 top-2 size-12"
             onClick={handleRemove}
           >
             <X className="fill-current text-destructive" />
           </Button>
         )}
-      </div>
+      </article>
     );
   },
 );
