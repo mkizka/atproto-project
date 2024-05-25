@@ -2,12 +2,13 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { LinkIcon, LoaderCircle, X } from "lucide-react";
 import type { ReactNode } from "react";
-import { type FC, forwardRef, useEffect, useState } from "react";
+import { type FC, forwardRef, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
 import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/urls";
 
+import { BlueskyEmbed } from "./BlueskyEmbed";
 import { BlueskyIcon } from "./board/icons/BlueskyIcon";
 import { Button } from "./shadcn/ui/button";
 import type { CardProps } from "./shadcn/ui/card";
@@ -56,18 +57,12 @@ type ItemInnerProps = {
 function ItemInner({ card }: ItemInnerProps) {
   const parsed = parseCard(card);
 
-  useEffect(() => {
-    if (parsed.type === "embed") {
-      window.bluesky?.scan?.();
-    }
-  }, [parsed.type]);
-
   if (parsed.type === "embed") {
     return (
       <div className="relative size-full">
         {/* クリック領域に被せて並び替え可能にする */}
         <div className="absolute size-full" />
-        <blockquote data-bluesky-uri={parsed.blueskyUri} />
+        <BlueskyEmbed blueskyUri={parsed.blueskyUri} />
         <LoaderCircle className="absolute inset-0 -z-10 m-auto size-8 animate-spin stroke-current text-muted-foreground" />
       </div>
     );
