@@ -1,8 +1,12 @@
 import type { AppBskyActorDefs } from "@atproto/api";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState } from "react";
 
 import type { BoardScheme, CardScheme } from "~/api/validator";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "~/components/shadcn/ui/avatar";
 
 import { Modal } from "./Modal";
 import { Sortable } from "./Sortable";
@@ -46,10 +50,8 @@ export function Board(props: Props) {
     <>
       <section className="flex w-full justify-center py-4">
         <Avatar className="size-16">
-          {props.profile.avatar && <AvatarImage src={props.profile.avatar} />}
-          <AvatarFallback>
-            {props.profile.handle.slice(0, 2).toUpperCase()}
-          </AvatarFallback>
+          <AvatarImage src={props.profile.avatar} />
+          <AvatarFallback />
         </Avatar>
       </section>
       <section className="flex w-full flex-col gap-2">

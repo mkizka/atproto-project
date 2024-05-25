@@ -1,4 +1,4 @@
-import type { AtpSessionData } from "@atproto/api";
+import type { AtpAgentLoginOpts, AtpSessionData } from "@atproto/api";
 import { BskyAgent } from "@atproto/api";
 
 import type { AtpServiceClient } from "~/generated/api";
@@ -22,7 +22,7 @@ class MyAgent {
     return this.client.dev;
   }
 
-  private getSession() {
+  public getSession() {
     if (this.bskyAgent.session) {
       return this.bskyAgent.session;
     }
@@ -35,16 +35,8 @@ class MyAgent {
     localStorage.setItem(LOCALSTORAGE_SESSION_KEY, JSON.stringify(session));
   }
 
-  async login() {
-    const session = this.getSession();
-    if (session) {
-      await this.bskyAgent.resumeSession(session);
-    } else {
-      await this.bskyAgent.login({
-        identifier: env.VITE_BSKY_USERNAME,
-        password: env.VITE_BSKY_PASSWORD,
-      });
-    }
+  async login(options: AtpAgentLoginOpts) {
+    await this.bskyAgent.login(options);
     this.client.setHeader(
       "Authorization",
       `Bearer ${this.bskyAgent.session!.accessJwt}`,
