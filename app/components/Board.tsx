@@ -6,7 +6,6 @@ import { myAgent } from "~/api/agent";
 import type { BoardScheme, CardScheme } from "~/api/validator";
 
 import { Modal } from "./Modal";
-import { Button } from "./shadcn/ui/button";
 import { Sortable } from "./Sortable";
 
 type Props = {
@@ -19,12 +18,19 @@ export function Board({ profile, board, editable }: Props) {
   const [open, setOpen] = useState(false);
   const [cards, setCards] = useState<CardScheme[]>(board.cards ?? []);
 
+  const saveCards = (cards: CardScheme[]) => {
+    void myAgent.updateBoard({ id: board.id, cards });
+    setCards(cards);
+  };
+
   const removeCard = (id: string) => {
-    setCards(cards.filter((card) => card.id !== id));
+    const newCards = cards.filter((card) => card.id !== id);
+    setCards(newCards);
   };
 
   const handleSubmit = (input: string) => {
-    setCards([...cards, { id: crypto.randomUUID(), url: input }]);
+    const newCards = [...cards, { id: crypto.randomUUID(), url: input }];
+    saveCards(newCards);
     setOpen(false);
   };
 
@@ -40,19 +46,10 @@ export function Board({ profile, board, editable }: Props) {
       </section>
       <section className="flex flex-col items-center">
         <div className="w-full max-w-[95vw] sm:max-w-screen-sm">
-          {editable && (
-            <div className="flex">
-              <Button onClick={() => myAgent.login()}>Sign in</Button>
-              <Button onClick={() => myAgent.updateBoard({ ...board, cards })}>
-                Save
-              </Button>
-              <Button onClick={() => myAgent.deleteBoard()}>Delete</Button>
-            </div>
-          )}
           <div className="flex flex-col gap-2">
             <Sortable
               cards={cards}
-              setCards={setCards}
+              saveCards={saveCards}
               removeCard={removeCard}
               sortable={editable}
             />
