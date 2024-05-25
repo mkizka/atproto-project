@@ -58,7 +58,7 @@ function ItemInner({ card }: ItemInnerProps) {
 
   useEffect(() => {
     if (parsed.type === "embed") {
-      // window.bluesky?.scan?.();
+      window.bluesky?.scan?.();
     }
   }, [parsed.type]);
 
