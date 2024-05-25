@@ -20,6 +20,7 @@ export default function Index() {
     <Board
       profile={profile._unsafeUnwrap()}
       board={board._unsafeUnwrap()}
+      onBoardUpdate={(board) => myAgent.updateBoard(board)}
       editable
     />
   );

@@ -2,24 +2,32 @@ import type { AppBskyActorDefs } from "@atproto/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { useState } from "react";
 
-import { myAgent } from "~/api/agent";
 import type { BoardScheme, CardScheme } from "~/api/validator";
 
 import { Modal } from "./Modal";
 import { Sortable } from "./Sortable";
 
-type Props = {
-  profile: AppBskyActorDefs.ProfileViewDetailed;
-  board: BoardScheme;
-  editable?: boolean;
+type EditableProps = {
+  editable: true;
+  onBoardUpdate?: (board: BoardScheme) => void;
 };
 
-export function Board({ profile, board, editable }: Props) {
+type NonEditableProps = {
+  editable?: false;
+};
+
+type Props = {
+  profile: Pick<AppBskyActorDefs.ProfileViewDetailed, "avatar" | "handle">;
+  board: BoardScheme;
+} & (EditableProps | NonEditableProps);
+
+export function Board(props: Props) {
   const [open, setOpen] = useState(false);
-  const [cards, setCards] = useState<CardScheme[]>(board.cards ?? []);
+  const [cards, setCards] = useState<CardScheme[]>(props.board.cards ?? []);
 
   const saveCards = (cards: CardScheme[]) => {
-    void myAgent.updateBoard({ id: board.id, cards });
+    if (!props.editable) return;
+    props.onBoardUpdate?.({ ...props.board, cards });
     setCards(cards);
   };
 
@@ -38,9 +46,9 @@ export function Board({ profile, board, editable }: Props) {
     <>
       <section className="flex w-full justify-center py-4">
         <Avatar className="size-16">
-          <AvatarImage src={profile.avatar} />
+          {props.profile.avatar && <AvatarImage src={props.profile.avatar} />}
           <AvatarFallback>
-            {profile.handle.slice(0, 2).toUpperCase()}
+            {props.profile.handle.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       </section>
@@ -51,9 +59,9 @@ export function Board({ profile, board, editable }: Props) {
               cards={cards}
               saveCards={saveCards}
               removeCard={removeCard}
-              sortable={editable}
+              sortable={props.editable}
             />
-            {editable && (
+            {props.editable && (
               <Modal
                 open={open}
                 onOpenChange={setOpen}
