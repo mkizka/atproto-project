@@ -91,8 +91,8 @@ importers:
         specifier: ^0.0.55
         version: 0.0.55
       '@atproto/lex-cli':
-        specifier: 0.4.0
-        version: 0.4.0
+        specifier: 0.3.2
+        version: 0.3.2
       '@mkizka/eslint-config':
         specifier: ^4.4.0
         version: 4.4.0(@typescript-eslint/eslint-plugin@7.10.0(@typescript-eslint/parser@7.10.0(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5)
@@ -174,6 +174,9 @@ packages:
     resolution: {integrity: sha512-8WUYjL+ZRq4WrD2+w5hE17joeIh9zQhZiuFGMU4CMlhqU6HLA0NhpbQGid82hzvWfWxCRmRGrO38LmOa67dNtg==}
     hasBin: true
 
+  '@atproto/common-web@0.2.4':
+    resolution: {integrity: sha512-6+DOhQcTklFmeiSkZRx6iFeqi4OFtGl4yEDGATk00q4tEcPoPvyOBtYHN6+G9lrfJIfx5RfmggamvXlJv1PxxA==}
+
   '@atproto/common-web@0.3.0':
     resolution: {integrity: sha512-67VnV6JJyX+ZWyjV7xFQMypAgDmjVaR9ZCuU/QW+mqlqI7fex2uL4Fv+7/jHadgzhuJHVd6OHOvNn0wR5WZYtA==}
 
@@ -192,15 +195,21 @@ packages:
   '@atproto/identity@0.4.0':
     resolution: {integrity: sha512-KKdVlqBgkFuTUx3KFiiQe0LuK9kopej1bhKm6SHRPEYbSEPFmRZQMY9TAjWJQrvQt8DpQzz6kVGjASFEjd3teQ==}
 
-  '@atproto/lex-cli@0.4.0':
-    resolution: {integrity: sha512-Q86/9pFSQoGlmMoseZwsvSTtJzGYDfXvMd6LIq4NNrUJUBF0d8e8DDrGFT1iCuMxnZWm2TifR0zQJEWsTTY02g==}
+  '@atproto/lex-cli@0.3.2':
+    resolution: {integrity: sha512-jhF7rjy47HHKVUPTe+i5QFYPJoWGJxx6h64kdq6ufcFaXwoiay6K8/tohsMPKky/l0Wk774OL8ZTEuh8mMJ42w==}
     hasBin: true
+
+  '@atproto/lexicon@0.3.3':
+    resolution: {integrity: sha512-6FOjdc3V05JKrtkhjfhHMS7f/4hMJOeHNtoE3Na7iFMpzBz0Lw5sw8kIFKY8pc8IG79qGcFgELyHLsljZYX+5A==}
 
   '@atproto/lexicon@0.4.0':
     resolution: {integrity: sha512-RvCBKdSI4M8qWm5uTNz1z3R2yIvIhmOsMuleOj8YR6BwRD+QbtUBy3l+xQ7iXf4M5fdfJFxaUNa6Ty0iRwdKqQ==}
 
   '@atproto/repo@0.4.0':
     resolution: {integrity: sha512-LB0DF/D8r8hB+qiGB0sWZuq7TSJYbWel+t572aCrLeCOmbRgnLkGPLUTOOUvLFYv8xz1BPZTbI8hy/vcUV79VA==}
+
+  '@atproto/syntax@0.2.1':
+    resolution: {integrity: sha512-ImOuiICtB5h78j90hAYOfTYzr5q5Wut0irNdELiogA3i74a8EXThe+j6Tj8snanYggrShbu5c6BDc1tVj477Yw==}
 
   '@atproto/syntax@0.3.0':
     resolution: {integrity: sha512-Weq0ZBxffGHDXHl9U7BQc2BFJi/e23AL+k+i5+D9hUq/bzT4yjGsrCejkjq0xt82xXDjmhhvQSZ0LqxyZ5woxA==}
@@ -4303,6 +4312,13 @@ snapshots:
       - supports-color
       - utf-8-validate
 
+  '@atproto/common-web@0.2.4':
+    dependencies:
+      graphemer: 1.4.0
+      multiformats: 9.9.0
+      uint8arrays: 3.0.0
+      zod: 3.23.8
+
   '@atproto/common-web@0.3.0':
     dependencies:
       graphemer: 1.4.0
@@ -4348,14 +4364,22 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@atproto/lex-cli@0.4.0':
+  '@atproto/lex-cli@0.3.2':
     dependencies:
-      '@atproto/lexicon': 0.4.0
-      '@atproto/syntax': 0.3.0
-      chalk: 4.1.2
+      '@atproto/lexicon': 0.3.3
+      '@atproto/syntax': 0.2.1
+      chalk: 5.3.0
       commander: 9.5.0
       ts-morph: 16.0.0
       yesno: 0.4.0
+      zod: 3.23.8
+
+  '@atproto/lexicon@0.3.3':
+    dependencies:
+      '@atproto/common-web': 0.2.4
+      '@atproto/syntax': 0.2.1
+      iso-datestring-validator: 2.2.2
+      multiformats: 9.9.0
       zod: 3.23.8
 
   '@atproto/lexicon@0.4.0':
@@ -4377,6 +4401,10 @@ snapshots:
       multiformats: 9.9.0
       uint8arrays: 3.0.0
       zod: 3.23.8
+
+  '@atproto/syntax@0.2.1':
+    dependencies:
+      '@atproto/common-web': 0.2.4
 
   '@atproto/syntax@0.3.0': {}
 
