@@ -52,24 +52,16 @@ export function Board(props: Props) {
           </AvatarFallback>
         </Avatar>
       </section>
-      <section className="flex flex-col items-center">
-        <div className="w-full max-w-[95vw] sm:max-w-screen-sm">
-          <div className="flex flex-col gap-2">
-            <Sortable
-              cards={cards}
-              saveCards={saveCards}
-              removeCard={removeCard}
-              sortable={props.editable}
-            />
-            {props.editable && (
-              <Modal
-                open={open}
-                onOpenChange={setOpen}
-                onSubmit={handleSubmit}
-              />
-            )}
-          </div>
-        </div>
+      <section className="flex w-full flex-col gap-2">
+        <Sortable
+          cards={cards}
+          saveCards={saveCards}
+          removeCard={removeCard}
+          sortable={props.editable}
+        />
+        {props.editable && (
+          <Modal open={open} onOpenChange={setOpen} onSubmit={handleSubmit} />
+        )}
       </section>
     </>
   );

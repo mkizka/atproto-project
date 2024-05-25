@@ -37,7 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <main className="flex justify-center">
-      <div className="w-full max-w-screen-sm">
+      <div className="w-full max-w-[95vw] sm:max-w-screen-sm">
         <Outlet />
       </div>
     </main>

@@ -85,17 +85,15 @@ export function Modal({ onSubmit, ...props }: Props) {
 
   return (
     <Dialog {...props}>
-      {!props.open && (
-        <DialogTrigger asChild>
-          <Card
-            as="button"
-            className="flex h-16 items-center justify-center gap-2 text-muted-foreground hover:opacity-70"
-          >
-            <CirclePlus className="stroke-current" />
-            <p className="mr-6">カードを追加</p>
-          </Card>
-        </DialogTrigger>
-      )}
+      <DialogTrigger asChild>
+        <Card
+          as="button"
+          className="flex h-16 items-center justify-center gap-2 text-muted-foreground hover:opacity-70"
+        >
+          <CirclePlus className="stroke-current" />
+          <p className="mr-6">カードを追加</p>
+        </Card>
+      </DialogTrigger>
       <DialogContent className="top-48 max-w-[90vw] gap-4 sm:max-w-screen-sm">
         <form className="grid gap-4" onSubmit={handleSubmit}>
           <DialogHeader>
