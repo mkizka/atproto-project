@@ -7,7 +7,6 @@ import { getSessionProfile } from "~/api/profile";
 import { Board } from "~/components/Board";
 
 export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
-  await myAgent.login();
   return {
     profile: await getSessionProfile(),
     board: await getSessionBoard(),

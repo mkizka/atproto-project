@@ -1,4 +1,4 @@
-import type { AtpAgentLoginOpts, AtpSessionData } from "@atproto/api";
+import type { AtpAgentLoginOpts } from "@atproto/api";
 import { BskyAgent } from "@atproto/api";
 
 import type { AtpServiceClient } from "~/generated/api";
@@ -6,8 +6,6 @@ import { AtpBaseClient } from "~/generated/api";
 import { env } from "~/utils/env";
 
 import type { BoardScheme } from "./validator";
-
-const LOCALSTORAGE_SESSION_KEY = "dev.mkizka.test.session";
 
 class MyAgent {
   client: AtpServiceClient;
@@ -22,26 +20,10 @@ class MyAgent {
     return this.client.dev;
   }
 
-  public getSession() {
-    if (this.bskyAgent.session) {
-      return this.bskyAgent.session;
-    }
-    const cachedSession = localStorage.getItem(LOCALSTORAGE_SESSION_KEY);
-    if (!cachedSession) return null;
-    return JSON.parse(cachedSession) as AtpSessionData;
-  }
-
-  private saveSession(session: AtpSessionData) {
-    localStorage.setItem(LOCALSTORAGE_SESSION_KEY, JSON.stringify(session));
-  }
-
   async login(options: AtpAgentLoginOpts) {
-    await this.bskyAgent.login(options);
-    this.client.setHeader(
-      "Authorization",
-      `Bearer ${this.bskyAgent.session!.accessJwt}`,
-    );
-    this.saveSession(this.bskyAgent.session!);
+    const response = await this.bskyAgent.login(options);
+    this.client.setHeader("Authorization", `Bearer ${response.data.accessJwt}`);
+    return response.data;
   }
 
   async getSessionProfile() {

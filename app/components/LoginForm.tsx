@@ -1,11 +1,11 @@
+import { useNavigate } from "@remix-run/react";
 import { err, ok, ResultAsync } from "neverthrow";
 import type { FormEvent } from "react";
 import { useRef } from "react";
 import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-import { myAgent } from "~/api/agent";
-
+import { useSession } from "./SessionProvider";
 import { Button } from "./shadcn/ui/button";
 import {
   Card,
@@ -33,14 +33,16 @@ const validateForm = (form: { identifier: string; password: string }) => {
   return ok(result.data);
 };
 
-const loginWithBluesky = ResultAsync.fromThrowable(
-  (...args: Parameters<typeof myAgent.login>) => myAgent.login(...args),
-  () => "ログインに失敗しました",
-);
-
 export function LoginForm() {
+  const session = useSession();
+  const navigate = useNavigate();
   const handleRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+
+  const loginWithBluesky = ResultAsync.fromThrowable(
+    session.login,
+    () => "ログインに失敗しました",
+  );
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -51,8 +53,7 @@ export function LoginForm() {
       .andThen(validateForm)
       .asyncAndThen(loginWithBluesky)
       .match(
-        // TODO: ログイン情報を管理するProviderを作ってユーザーページに遷移できるようにする
-        () => alert("login"),
+        (response) => navigate(`/board/${response.handle}`),
         () => alert("error"),
       );
   };
