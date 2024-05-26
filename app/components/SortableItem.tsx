@@ -42,6 +42,14 @@ const parseCard = (card: CardScheme): ParsedCard => {
       url: card.url,
     };
   }
+  if (url.hostname === "bsky.app") {
+    return {
+      type: "link",
+      icon: BlueskyIcon,
+      text: card.url,
+      url: card.url,
+    };
+  }
   return {
     type: "link",
     icon: LinkIcon,

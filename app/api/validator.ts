@@ -3,6 +3,7 @@ import { z } from "zod";
 export const cardSchema = z.object({
   id: z.string(),
   url: z.string().url(),
+  text: z.string().optional(),
 });
 
 export type CardScheme = z.infer<typeof cardSchema>;
