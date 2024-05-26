@@ -9,6 +9,7 @@ import {
 
 import stylesheet from "~/tailwind.css?url";
 
+import { myAgent } from "./api/agent";
 import { SessionProvider } from "./components/SessionProvider";
 
 export const links: LinksFunction = () => [
@@ -34,6 +35,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   );
+}
+
+// どのページでもログイン状態を復元する
+export async function clientLoader() {
+  if (!myAgent.hasSession()) {
+    await myAgent.resumeSession();
+  }
+  return null;
 }
 
 export default function App() {

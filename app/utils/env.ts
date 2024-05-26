@@ -2,9 +2,15 @@ import { z } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 const envSchema = z.object({
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default(process.env.NODE_ENV),
   VITE_BSKY_USERNAME: z.string(),
   VITE_BSKY_PASSWORD: z.string(),
   VITE_BSKY_URL: z.string().url(),
+  VITE_LOG_LEVEL: z
+    .enum(["debug", "info", "warn", "error"])
+    .default(process.env.NODE_ENV === "production" ? "info" : "debug"),
 });
 
 export type EnvScheme = z.infer<typeof envSchema>;

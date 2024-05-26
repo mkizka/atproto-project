@@ -18,7 +18,9 @@ type Props = {
 };
 
 export function SessionProvider({ children }: Props) {
-  const [data, setData] = useLocalStorage<AtpSessionData>("bluesky.session");
+  const [data, setData] = useLocalStorage<AtpSessionData>(
+    myAgent.localStorageKey,
+  );
 
   const login = async (options: AtpAgentLoginOpts) => {
     const newSession = await myAgent.login(options);
