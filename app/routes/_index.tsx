@@ -12,7 +12,7 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-    <>
+    <div className="grid gap-8">
       <Board
         profile={{
           handle: "example.bsky.app",
@@ -30,6 +30,6 @@ export default function Index() {
         editable
       />
       <LoginForm />
-    </>
+    </div>
   );
 }

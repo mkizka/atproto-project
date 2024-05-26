@@ -3,17 +3,10 @@ import { err, ok, ResultAsync } from "neverthrow";
 import type { FormEvent } from "react";
 import { useRef } from "react";
 import { z } from "zod";
-import { fromZodError } from "zod-validation-error";
 
 import { useSession } from "./SessionProvider";
 import { Button } from "./shadcn/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./shadcn/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/ui/card";
 import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
 
@@ -28,7 +21,7 @@ const formScheme = z.object({
 const validateForm = (form: { identifier: string; password: string }) => {
   const result = formScheme.safeParse(form);
   if (!result.success) {
-    return err(fromZodError(result.error).toString());
+    return err(result.error.issues[0].message);
   }
   return ok(result.data);
 };
@@ -54,17 +47,14 @@ export function LoginForm() {
       .asyncAndThen(loginWithBluesky)
       .match(
         (response) => navigate(`/board/${response.handle}`),
-        () => alert("error"),
+        (error) => alert(error),
       );
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>こういうページを作ろう</CardTitle>
-        <CardDescription>
-          URLを貼りつけるだけでこういうページが作れます
-        </CardDescription>
+        <CardTitle>Blueskyアカウントでログイン</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="grid gap-4">
@@ -90,7 +80,7 @@ export function LoginForm() {
             />
           </div>
           <div className="flex justify-end">
-            <Button>Blueskyアカウントでログイン</Button>
+            <Button>ログイン</Button>
           </div>
         </form>
       </CardContent>
