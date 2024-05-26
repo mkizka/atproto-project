@@ -10,10 +10,11 @@ import { env } from "~/utils/env";
 
 import type { BoardScheme } from "./validator";
 
+const SESSION_STORAGE_KEY = "bluesky.session";
+
 class MyAgent {
   readonly client: AtpServiceClient;
   readonly bskyAgent: BskyAgent;
-  readonly localStorageKey = "bluesky.session";
 
   constructor({ service }: { service: string }) {
     this.client = new AtpBaseClient().service(service);
@@ -21,9 +22,15 @@ class MyAgent {
       service,
       persistSession: (event, session) => {
         if (event === "create" || event === "update") {
-          localStorage.setItem(this.localStorageKey, JSON.stringify(session));
+          if (session) {
+            this.client.setHeader(
+              "Authorization",
+              `Bearer ${session.accessJwt}`,
+            );
+          }
+          localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
         } else if (event === "expired") {
-          localStorage.removeItem(this.localStorageKey);
+          localStorage.removeItem(SESSION_STORAGE_KEY);
         }
       },
     });
@@ -33,37 +40,27 @@ class MyAgent {
     return this.client.dev;
   }
 
-  private getSession() {
-    if (this.bskyAgent.session) {
-      return this.bskyAgent.session;
-    }
-    const session = localStorage.getItem(this.localStorageKey);
+  hasSession() {
+    return this.bskyAgent.hasSession;
+  }
+
+  getSession() {
+    const session = localStorage.getItem(SESSION_STORAGE_KEY);
     if (!session) {
       return null;
     }
     return JSON.parse(session) as AtpSessionData;
   }
 
-  hasSession() {
-    return this.bskyAgent.hasSession;
-  }
-
-  async resumeSession() {
-    const currentSession = this.getSession();
-    if (!currentSession) {
-      return null;
+  async resumeSessionIfExists() {
+    const session = this.getSession();
+    if (session) {
+      await this.bskyAgent.resumeSession(session);
     }
-    await this.bskyAgent.resumeSession(currentSession);
-    this.client.setHeader(
-      "Authorization",
-      `Bearer ${this.bskyAgent.session!.accessJwt}`,
-    );
   }
 
   async login(options: AtpAgentLoginOpts) {
-    const response = await this.bskyAgent.login(options);
-    this.client.setHeader("Authorization", `Bearer ${response.data.accessJwt}`);
-    return response.data;
+    return await this.bskyAgent.login(options);
   }
 
   async getSessionProfile() {

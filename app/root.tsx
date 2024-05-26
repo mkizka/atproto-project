@@ -37,11 +37,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-// どのページでもログイン状態を復元する
 export async function clientLoader() {
-  if (!myAgent.hasSession()) {
-    await myAgent.resumeSession();
-  }
+  await myAgent.resumeSessionIfExists();
   return null;
 }
 
