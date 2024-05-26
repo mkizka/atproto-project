@@ -47,14 +47,14 @@ export function Board(props: Props) {
   };
 
   return (
-    <div className="grid gap-2">
+    <div className="flex flex-col gap-2">
       <section className="flex w-full justify-center py-4">
         <Avatar className="size-16">
           <AvatarImage src={props.profile.avatar} />
           <AvatarFallback />
         </Avatar>
       </section>
-      <section className="grid w-full gap-2">
+      <section className="flex w-full flex-col gap-2">
         <Sortable
           cards={cards}
           saveCards={saveCards}
