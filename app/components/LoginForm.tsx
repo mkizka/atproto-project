@@ -62,7 +62,7 @@ export function LoginForm() {
             <Label htmlFor="handle">ハンドル(またはDID)</Label>
             <Input
               id="handle"
-              placeholder="example.bsky.app"
+              placeholder="example.bsky.social"
               autoComplete="username"
               required
               ref={handleRef}
