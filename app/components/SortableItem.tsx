@@ -1,6 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { LinkIcon, LoaderCircle, X } from "lucide-react";
+import { LinkIcon, LoaderCircle, PencilLine, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { type FC, forwardRef, useState } from "react";
 
@@ -87,25 +87,34 @@ function ItemInner({ card }: ItemInnerProps) {
   );
 }
 
-// @dnd-kitのlistenersの型
-// eslint-disable-next-line @typescript-eslint/ban-types
-type Listeners = Record<string, Function>;
-
 type ItemProps = {
   card: CardScheme;
   children?: ReactNode;
+  editCard?: (id: string) => void;
   removeCard?: (id: string) => void;
-  disabled?: boolean;
+  editable?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
 } & CardProps<"div">;
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
   (
-    { card, removeCard, disabled, isDragging, isOverlay, ...cardProps },
+    {
+      card,
+      editCard,
+      removeCard,
+      editable,
+      isDragging,
+      isOverlay,
+      ...cardProps
+    },
     ref,
   ) => {
     const [isRemoving, setIsRemoving] = useState(false);
+
+    const handleEdit = () => {
+      editCard?.(card.id);
+    };
 
     const handleRemove = () => {
       const ok = confirm(`${card.url} を削除しますか？`);
@@ -119,7 +128,6 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
     return (
       <article className="relative">
         <div
-          {...cardProps}
           // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
           // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
           className={cn("flex w-full items-center touch-none", {
@@ -130,32 +138,38 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           })}
           ref={ref}
           suppressHydrationWarning
+          {...cardProps}
         >
           <ItemInner card={card} />
         </div>
-        {!disabled && (
-          <Button
-            variant="outline"
-            size="icon"
-            className="absolute right-2 top-2 size-12"
-            onClick={handleRemove}
-          >
-            <X className="fill-current text-destructive" />
-          </Button>
+        {editable && (
+          <div className="absolute right-2 top-2 flex gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-12"
+              onClick={handleEdit}
+            >
+              <PencilLine />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-12"
+              onClick={handleRemove}
+            >
+              <X className="fill-current text-destructive" />
+            </Button>
+          </div>
         )}
       </article>
     );
   },
 );
 
-type SocialCardProps = {
-  card: CardScheme;
-  removeCard: (id: string) => void;
-  listeners?: Listeners;
-  disabled?: boolean;
-};
+export type SortableItemProps = Omit<ItemProps, "isDragging">;
 
-export function SortableItem({ card, removeCard, disabled }: SocialCardProps) {
+export function SortableItem(props: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -164,8 +178,8 @@ export function SortableItem({ card, removeCard, disabled }: SocialCardProps) {
     transition,
     isDragging,
   } = useSortable({
-    id: card.id,
-    disabled,
+    id: props.card.id,
+    disabled: !props.editable,
   });
 
   const style = {
@@ -175,14 +189,12 @@ export function SortableItem({ card, removeCard, disabled }: SocialCardProps) {
 
   return (
     <Item
-      card={card}
-      removeCard={removeCard}
       ref={setNodeRef}
-      disabled={disabled}
       isDragging={isDragging}
       style={style}
       {...attributes}
       {...listeners}
+      {...props}
     />
   );
 }

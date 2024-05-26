@@ -21,16 +21,15 @@ import { useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
 
+import type { SortableItemProps } from "./SortableItem";
 import { Item, SortableItem } from "./SortableItem";
 
 type Props = {
   cards: CardScheme[];
   saveCards: (cards: CardScheme[]) => void;
-  removeCard: (id: string) => void;
-  sortable?: boolean;
-};
+} & Omit<SortableItemProps, "card">;
 
-export function Sortable({ cards, saveCards, removeCard, sortable }: Props) {
+export function Sortable({ cards, saveCards, ...sortableItemProps }: Props) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const activeCard = cards.find((card) => card.id === activeId);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
@@ -58,12 +57,7 @@ export function Sortable({ cards, saveCards, removeCard, sortable }: Props) {
     >
       <SortableContext items={cards} strategy={verticalListSortingStrategy}>
         {cards.map((card) => (
-          <SortableItem
-            key={card.id}
-            card={card}
-            removeCard={removeCard}
-            disabled={!sortable}
-          />
+          <SortableItem key={card.id} card={card} {...sortableItemProps} />
         ))}
       </SortableContext>
       <DragOverlay>

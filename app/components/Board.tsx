@@ -35,6 +35,10 @@ export function Board(props: Props) {
     setCards(cards);
   };
 
+  const editCard = () => {
+    setOpen(true);
+  };
+
   const removeCard = (id: string) => {
     const newCards = cards.filter((card) => card.id !== id);
     setCards(newCards);
@@ -58,8 +62,9 @@ export function Board(props: Props) {
         <Sortable
           cards={cards}
           saveCards={saveCards}
+          editCard={editCard}
           removeCard={removeCard}
-          sortable={props.editable}
+          editable={props.editable}
         />
         {props.editable && (
           <Modal open={open} onOpenChange={setOpen} onSubmit={handleSubmit} />
