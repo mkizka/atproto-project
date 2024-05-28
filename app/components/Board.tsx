@@ -27,7 +27,7 @@ type Props = {
 
 export function Board(props: Props) {
   const [open, setOpen] = useState(false);
-  const [cards, setCards] = useState<CardScheme[]>(props.board.cards ?? []);
+  const [cards, setCards] = useState<CardScheme[]>(props.board.cards);
 
   const saveCards = (cards: CardScheme[]) => {
     if (!props.editable) return;
