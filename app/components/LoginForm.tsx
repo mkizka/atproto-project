@@ -46,8 +46,12 @@ export function LoginForm() {
       .andThen(validateForm)
       .asyncAndThen(loginWithBluesky)
       .match(
-        (response) => navigate(`/board/${response.handle}`),
-        (error) => alert(error),
+        (response) => {
+          navigate(`/board/${response.handle}`);
+        },
+        (error) => {
+          alert(error);
+        },
       );
   };
 

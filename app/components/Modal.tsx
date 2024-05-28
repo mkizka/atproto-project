@@ -68,7 +68,9 @@ export function Modal({ onSubmit, ...props }: Props) {
           onSubmit(url);
           ref.current!.value = "";
         },
-        (err) => alert(err),
+        (err) => {
+          alert(err);
+        },
       );
   };
 
@@ -78,8 +80,12 @@ export function Modal({ onSubmit, ...props }: Props) {
       .andThen(resolveHandleInUrl)
       .andThen(confirmToAdd)
       .match(
-        (url) => onSubmit(url),
-        (err) => alert(err),
+        (url) => {
+          onSubmit(url);
+        },
+        (err) => {
+          alert(err);
+        },
       );
   };
 

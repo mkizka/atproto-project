@@ -8,7 +8,7 @@ export type CardProps<T extends AsType = "div"> = {
   as?: T;
 } & React.ComponentProps<T>;
 
-const Card = React.forwardRef<HTMLDivElement, CardProps<"div">>(
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, as, ...props }, ref) => {
     const TagName = as ?? "div";
     return (

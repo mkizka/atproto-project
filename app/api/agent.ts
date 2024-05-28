@@ -110,7 +110,7 @@ class MyAgent {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
-    return await this.dev.mkizka.test.profile.board.delete({
+    await this.dev.mkizka.test.profile.board.delete({
       repo: this.bskyAgent.session.did,
       validate: false,
       rkey: "self",

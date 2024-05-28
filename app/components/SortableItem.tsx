@@ -95,7 +95,7 @@ type ItemProps = {
   editable?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
-} & CardProps<"div">;
+} & CardProps;
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
   (

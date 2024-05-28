@@ -9,7 +9,7 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "NODE_ENV=development tsx watch --ignore vite.config.ts.* ./app/server.ts",
-    "format": "prettier . --write && eslint . --fix",
+    "format": "eslint . --fix && prettier . --write",
     "postinstall": "tsx ./scripts/generate.ts",
     "prepare": "husky",
     "start": "NODE_ENV=production tsx ./app/server.ts",
@@ -46,7 +46,7 @@
   "devDependencies": {
     "@atproto/bsky": "^0.0.55",
     "@atproto/lex-cli": "0.3.2",
-    "@mkizka/eslint-config": "^5.0.0",
+    "@mkizka/eslint-config": "^5.1.1",
     "@remix-run/dev": "^2.9.2",
     "@types/express": "^4.17.21",
     "@types/react": "^18.3.3",
@@ -69,8 +69,8 @@
   },
   "sideEffects": false,
   "lint-staged": {
-    "*": "prettier --ignore-unknown --write",
-    "*.{js,mjs,ts,tsx}": "eslint --fix"
+    "*.{js,mjs,ts,tsx}": "eslint --fix",
+    "*": "prettier --ignore-unknown --write"
   },
   "prettier": {
     "plugins": [
