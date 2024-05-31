@@ -5,5 +5,6 @@ export default [
     ignores: ["build/", "atproto/", "app/generated/"],
   },
   ...configs.typescript(),
+  ...configs.react(),
   ...configs.tailwind(),
 ];

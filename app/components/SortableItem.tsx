@@ -166,6 +166,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
     );
   },
 );
+Item.displayName = "Item";
 
 export type SortableItemProps = Omit<ItemProps, "isDragging">;
 
