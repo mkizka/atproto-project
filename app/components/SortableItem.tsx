@@ -78,7 +78,7 @@ function ItemInner({ card }: ItemInnerProps) {
   return (
     <Card
       as="a"
-      className="flex h-16 min-w-0 flex-1 items-center gap-4 p-4 hover:opacity-70"
+      className="flex h-16 min-w-0 flex-1 items-center gap-4 p-4"
       href={parsed.url}
     >
       <parsed.icon className="size-8" />
@@ -95,6 +95,7 @@ type ItemProps = {
   editable?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
+  isSorting?: boolean;
 } & CardProps;
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
@@ -106,6 +107,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
       editable,
       isDragging,
       isOverlay,
+      isSorting,
       ...cardProps
     },
     ref,
@@ -131,6 +133,9 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           // > We highly recommend you specify the touch-action CSS property for all of your draggable elements.
           // https://docs.dndkit.com/api-documentation/sensors/pointer#touch-action
           className={cn("flex w-full items-center touch-none", {
+            // DragOverlayでなければホバー時に半透明にする
+            "hover:opacity-80": !isOverlay,
+            // ドラッグ中のDragOverlayでない方は半透明にする
             "opacity-30": isDragging,
             // DragOverlayは拡大しておき100%スタートの拡大アニメーションをつける
             "animate-in zoom-in-100 scale-[103%] shadow-2xl": isOverlay,
@@ -142,8 +147,8 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
         >
           <ItemInner card={card} />
         </div>
-        {editable && (
-          <div className="absolute right-2 top-2 flex gap-2">
+        {editable && !isSorting && (
+          <div className="absolute right-2 top-2 flex gap-2 opacity-80">
             <Button
               variant="outline"
               size="icon"
@@ -178,6 +183,7 @@ export function SortableItem(props: SortableItemProps) {
     transform,
     transition,
     isDragging,
+    isSorting,
   } = useSortable({
     id: props.card.id,
     disabled: !props.editable,
@@ -192,6 +198,7 @@ export function SortableItem(props: SortableItemProps) {
     <Item
       ref={setNodeRef}
       isDragging={isDragging}
+      isSorting={isSorting}
       style={style}
       {...attributes}
       {...listeners}
