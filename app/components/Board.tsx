@@ -1,6 +1,9 @@
 import type { AppBskyActorDefs } from "@atproto/api";
+import type { DependencyList } from "react";
 import { useState } from "react";
+import { useEffect, useRef } from "react";
 
+import { myAgent } from "~/api/agent";
 import type { BoardScheme, CardScheme } from "~/api/validator";
 import {
   Avatar,
@@ -11,27 +14,35 @@ import {
 import { Modal } from "./Modal";
 import { Sortable } from "./Sortable";
 
-type EditableProps = {
-  editable: true;
-  onBoardUpdate?: (board: BoardScheme) => void;
-};
+export const useDidMountEffect = (effect: () => void, deps: DependencyList) => {
+  const didMount = useRef(false);
 
-type NonEditableProps = {
-  editable?: false;
+  useEffect(() => {
+    if (didMount.current) {
+      return effect();
+    } else {
+      didMount.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
 };
 
 type Props = {
   profile: Pick<AppBskyActorDefs.ProfileViewDetailed, "avatar" | "handle">;
   board: BoardScheme;
-} & (EditableProps | NonEditableProps);
+  editable?: boolean;
+};
 
-export function Board(props: Props) {
+export function Board({ profile, board, editable }: Props) {
   const [open, setOpen] = useState(false);
-  const [cards, setCards] = useState<CardScheme[]>(props.board.cards);
+  const [cards, setCards] = useState<CardScheme[]>(board.cards);
+
+  useDidMountEffect(() => {
+    void myAgent.updateBoard({ ...board, cards });
+  }, [JSON.stringify(cards)]);
 
   const saveCards = (cards: CardScheme[]) => {
-    if (!props.editable) return;
-    props.onBoardUpdate?.({ ...props.board, cards });
+    if (!editable) return;
     setCards(cards);
   };
 
@@ -58,19 +69,19 @@ export function Board(props: Props) {
     <div className="flex flex-col gap-2">
       <section className="flex w-full justify-center py-4">
         <Avatar className="size-16">
-          <AvatarImage src={props.profile.avatar} />
+          <AvatarImage src={profile.avatar} />
           <AvatarFallback />
         </Avatar>
       </section>
       <section className="flex w-full flex-col gap-2">
         <Sortable
           cards={cards}
-          saveCards={saveCards}
+          setCards={setCards}
           editCard={editCard}
           removeCard={removeCard}
-          editable={props.editable}
+          editable={editable}
         />
-        {props.editable && (
+        {editable && (
           <Modal
             open={open}
             onOpenChange={handleOpen}

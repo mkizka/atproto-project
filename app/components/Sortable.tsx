@@ -26,10 +26,10 @@ import { Item, SortableItem } from "./SortableItem";
 
 type Props = {
   cards: CardScheme[];
-  saveCards: (cards: CardScheme[]) => void;
+  setCards: (cards: CardScheme[]) => void;
 } & Omit<SortableItemProps, "card">;
 
-export function Sortable({ cards, saveCards, ...sortableItemProps }: Props) {
+export function Sortable({ cards, setCards, ...sortableItemProps }: Props) {
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const activeCard = cards.find((card) => card.id === activeId);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
@@ -43,7 +43,7 @@ export function Sortable({ cards, saveCards, ...sortableItemProps }: Props) {
       const oldIndex = cards.findIndex((item) => item.id === active.id);
       const newIndex = cards.findIndex((item) => item.id === over!.id);
       const movedCards = arrayMove(cards, oldIndex, newIndex);
-      saveCards(movedCards);
+      setCards(movedCards);
     }
     setActiveId(null);
   };
