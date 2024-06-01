@@ -6,8 +6,10 @@ import {
 } from "@conform-to/react";
 import { Form } from "@remix-run/react";
 import { err, ok, ResultAsync } from "neverthrow";
+import { useLayoutEffect } from "react";
 import { z } from "zod";
 
+import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
@@ -33,6 +35,7 @@ const validateClipboard = (text: string) => {
 };
 
 export function ModalForm() {
+  const { editingCard } = useModal();
   const form = useFormMetadata();
   const [url] = useField("url");
   const [id] = useField("id");
@@ -47,6 +50,17 @@ export function ModalForm() {
       );
   };
 
+  useLayoutEffect(() => {
+    if (editingCard) {
+      form.update({ name: "id", value: editingCard.id });
+      form.update({ name: "url", value: editingCard.url });
+    } else {
+      form.update({ name: "id", value: "" });
+      form.update({ name: "url", value: "" });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingCard?.id]);
+
   return (
     <Form {...getFormProps(form)}>
       <div id={form.errorId}>{form.errors}</div>
@@ -54,6 +68,8 @@ export function ModalForm() {
         <Label htmlFor={fields.url.id}>URL</Label>
         <Input
           {...getInputProps(fields.url, { type: "url" })}
+          // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
+          key={fields.url.key}
           placeholder="https://bsky.app/profile/..."
         />
         <div id={fields.url.errorId} className="mt-2 text-destructive">

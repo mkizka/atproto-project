@@ -5,10 +5,13 @@ import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 import { z } from "zod";
 
+import type { CardScheme } from "~/api/validator";
+
 import { useBoard } from "./BoardProvider";
 
 type ModalContextValue = {
   formId: string;
+  editingCard: CardScheme | null;
   open: boolean;
   setOpen: (open: boolean, cardId?: string) => void;
 };
@@ -30,7 +33,7 @@ type Props = {
 
 export function ModalProvider({ children }: Props) {
   const [open, setOpen] = useState(false);
-  const [cardId, setCardId] = useState<string | null>(null);
+  const [editingCard, setEditingCard] = useState<CardScheme | null>(null);
   const { cards, addCard } = useBoard();
   const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
 
@@ -54,13 +57,14 @@ export function ModalProvider({ children }: Props) {
 
   const handleOpen: ModalContextValue["setOpen"] = (open, cardId) => {
     setOpen(open);
-    setCardId(cardId ?? null);
+    const card = cards.find((card) => card.id === cardId);
+    setEditingCard(card ?? null);
   };
 
   return (
     <FormProvider context={form.context}>
       <ModalContext.Provider
-        value={{ formId: form.id, open, setOpen: handleOpen }}
+        value={{ formId: form.id, editingCard, open, setOpen: handleOpen }}
       >
         {children}
       </ModalContext.Provider>
