@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { resolveHandleIfNeeded } from "~/utils/urls";
 
+import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
@@ -51,6 +52,7 @@ type Props = {
 };
 
 export function ModalForm({ onSubmit }: Props) {
+  const { setOpen } = useModal();
   const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
   const [form, fields] = useForm<Schema>({
     lastResult,
@@ -65,7 +67,10 @@ export function ModalForm({ onSubmit }: Props) {
         .andThen(resolveHandleInUrl)
         .map((url) => url.toString())
         .match(
-          (url) => onSubmit(url),
+          (url) => {
+            onSubmit(url);
+            setOpen(false);
+          },
           (err) => alert(err),
         );
       const result = submission.reply();

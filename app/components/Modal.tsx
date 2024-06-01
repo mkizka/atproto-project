@@ -1,7 +1,7 @@
-import type { DialogProps } from "@radix-ui/react-dialog";
 import { CirclePlus } from "lucide-react";
 
 import { ModalForm } from "./ModalForm";
+import { useModal } from "./ModalProvider";
 import { Card } from "./shadcn/ui/card";
 import {
   Dialog,
@@ -13,11 +13,12 @@ import {
 
 type Props = {
   onSubmit: (input: string) => void;
-} & DialogProps;
+};
 
-export function Modal({ onSubmit, ...props }: Props) {
+export function Modal({ onSubmit }: Props) {
+  const { open, setOpen } = useModal();
   return (
-    <Dialog {...props}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Card
           as="button"

@@ -12,6 +12,7 @@ import {
 } from "~/components/shadcn/ui/avatar";
 
 import { Modal } from "./Modal";
+import { ModalProvider } from "./ModalProvider";
 import { Sortable } from "./Sortable";
 
 export const useDidMountEffect = (effect: () => void, deps: DependencyList) => {
@@ -55,40 +56,31 @@ export function Board({ profile, board, editable }: Props) {
     setCards(newCards);
   };
 
-  const handleOpen = (open: boolean) => {
-    setOpen(open);
-  };
-
   const handleSubmit = (input: string) => {
     const newCards = [...cards, { id: crypto.randomUUID(), url: input }];
     saveCards(newCards);
-    setOpen(false);
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      <section className="flex w-full justify-center py-4">
-        <Avatar className="size-16">
-          <AvatarImage src={profile.avatar} />
-          <AvatarFallback />
-        </Avatar>
-      </section>
-      <section className="flex w-full flex-col gap-2">
-        <Sortable
-          cards={cards}
-          setCards={setCards}
-          editCard={editCard}
-          removeCard={removeCard}
-          editable={editable}
-        />
-        {editable && (
-          <Modal
-            open={open}
-            onOpenChange={handleOpen}
-            onSubmit={handleSubmit}
+    <ModalProvider>
+      <div className="flex flex-col gap-2">
+        <section className="flex w-full justify-center py-4">
+          <Avatar className="size-16">
+            <AvatarImage src={profile.avatar} />
+            <AvatarFallback />
+          </Avatar>
+        </section>
+        <section className="flex w-full flex-col gap-2">
+          <Sortable
+            cards={cards}
+            setCards={setCards}
+            editCard={editCard}
+            removeCard={removeCard}
+            editable={editable}
           />
-        )}
-      </section>
-    </div>
+          {editable && <Modal onSubmit={handleSubmit} />}
+        </section>
+      </div>
+    </ModalProvider>
   );
 }
