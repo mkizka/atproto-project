@@ -1,4 +1,3 @@
-import type { SubmissionResult } from "@conform-to/react";
 import { FormProvider, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import type { ReactNode } from "react";
@@ -19,9 +18,7 @@ type ModalContextValue = {
 const ModalContext = createContext<ModalContextValue | null>(null);
 
 const schema = z.object({
-  url: z
-    .string({ message: "入力してください" })
-    .url({ message: "URLを入力してください" }),
+  url: z.string().url({ message: "URLを入力してください" }),
   id: z.string().optional(),
 });
 
@@ -34,24 +31,23 @@ type Props = {
 export function ModalProvider({ children }: Props) {
   const [open, setOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<CardScheme | null>(null);
-  const { cards, addCard } = useBoard();
-  const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
+  const { cards, addCard, replaceCard } = useBoard();
 
   const [form] = useForm<Schema>({
-    lastResult,
     constraint: getZodConstraint(schema),
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },
     onSubmit: (event, { submission }) => {
       event.preventDefault();
-      if (!submission) throw new Error("予期せぬエラー");
-      const url = submission.payload.url as string;
-      addCard({ url });
+      if (!submission) throw new Error("予期せぬエラーが発生しました");
+      const formCard = submission.payload as Schema;
+      if (formCard.id) {
+        replaceCard({ ...formCard, id: formCard.id });
+      } else {
+        addCard(formCard);
+      }
       setOpen(false);
-      const result = submission.reply();
-      setLastResult(result);
-      return result;
     },
   });
 

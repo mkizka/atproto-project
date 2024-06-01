@@ -81,7 +81,12 @@ export function ModalForm() {
       <p className="text-balance text-end text-sm text-muted-foreground">
         「コピーしたURLを追加」を使うにはクリップボードの許可が必要です
       </p>
-      <input id={fields.id.id} type="email" name={fields.id.name} hidden />
+      <input
+        {...getInputProps(fields.id, { type: "text" })}
+        // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
+        key={fields.id.key}
+        hidden
+      />
     </Form>
   );
 }

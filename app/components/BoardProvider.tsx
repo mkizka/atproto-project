@@ -7,6 +7,7 @@ import type { BoardScheme, CardScheme } from "~/api/validator";
 type BoardContextValue = {
   cards: CardScheme[];
   setCards: (cards: CardScheme[]) => void;
+  replaceCard: (card: CardScheme) => void;
   addCard: (card: Omit<CardScheme, "id">) => void;
   removeCard: (id: string) => void;
 };
@@ -31,7 +32,15 @@ export function BoardProvider({ children, board }: Props) {
   };
 
   const addCard: BoardContextValue["addCard"] = (card) => {
-    const newCards = [...value, { id: crypto.randomUUID(), ...card }];
+    const newCards = [...value, { ...card, id: crypto.randomUUID() }];
+    setValue(newCards);
+    void updateBoard(newCards);
+  };
+
+  const replaceCard: BoardContextValue["replaceCard"] = (card) => {
+    const newCards = value.map((currentCard) =>
+      currentCard.id === card.id ? card : currentCard,
+    );
     setValue(newCards);
     void updateBoard(newCards);
   };
@@ -44,7 +53,7 @@ export function BoardProvider({ children, board }: Props) {
 
   return (
     <BoardContext.Provider
-      value={{ cards: value, setCards, addCard, removeCard }}
+      value={{ cards: value, setCards, addCard, replaceCard, removeCard }}
     >
       {children}
     </BoardContext.Provider>
