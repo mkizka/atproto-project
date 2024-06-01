@@ -20,8 +20,8 @@ type Props = {
 
 export function Board({ profile, board, editable }: Props) {
   return (
-    <ModalProvider>
-      <BoardProvider board={board}>
+    <BoardProvider board={board}>
+      <ModalProvider>
         <div className="flex flex-col gap-2">
           <section className="flex w-full justify-center py-4">
             <Avatar className="size-16">
@@ -34,7 +34,7 @@ export function Board({ profile, board, editable }: Props) {
             {editable && <Modal />}
           </section>
         </div>
-      </BoardProvider>
-    </ModalProvider>
+      </ModalProvider>
+    </BoardProvider>
   );
 }

@@ -1,15 +1,13 @@
-import type { SubmissionResult } from "@conform-to/react";
-import { getFormProps, getInputProps, useForm } from "@conform-to/react";
-import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  useField,
+  useFormMetadata,
+} from "@conform-to/react";
 import { Form } from "@remix-run/react";
-import { err, ok, okAsync, ResultAsync } from "neverthrow";
-import { useState } from "react";
+import { err, ok, ResultAsync } from "neverthrow";
 import { z } from "zod";
 
-import { resolveHandleIfNeeded } from "~/utils/urls";
-
-import { useBoard } from "./BoardProvider";
-import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
@@ -34,57 +32,21 @@ const validateClipboard = (text: string) => {
   }
 };
 
-const resolveHandleInUrl = ResultAsync.fromThrowable(
-  (url: string) => resolveHandleIfNeeded(url),
-  () => "URLに含まれているハンドルの解決に失敗しました",
-);
-
-const schema = z.object({
-  url: z
-    .string({ message: "入力してください" })
-    .url({ message: "URLを入力してください" }),
-  id: z.string().optional(),
-});
-
-type Schema = z.infer<typeof schema>;
-
 export function ModalForm() {
-  const { setOpen } = useModal();
-  const { addCard } = useBoard();
-  const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
-  const [form, fields] = useForm<Schema>({
-    lastResult,
-    constraint: getZodConstraint(schema),
-    onValidate({ formData }) {
-      return parseWithZod(formData, { schema });
-    },
-    onSubmit: async (event, { submission }) => {
-      event.preventDefault();
-      if (!submission) throw new Error("予期せぬエラー");
-      await okAsync(submission.payload.url as string)
-        .andThen(resolveHandleInUrl)
-        .map((url) => url.toString())
-        .match(
-          (url) => {
-            addCard({ url });
-            setOpen(false);
-          },
-          (err) => alert(err),
-        );
-      const result = submission.reply();
-      setLastResult(result);
-      return result;
-    },
-  });
+  const form = useFormMetadata();
+  const [url] = useField("url");
+  const [id] = useField("id");
+  const fields = { url, id };
+
   const handleClipboard = async () => {
     await readClipboard()
       .andThen(validateClipboard)
-      .andThen(resolveHandleInUrl)
       .match(
         (url) => form.update({ name: "url", value: url }),
         (err) => alert(err),
       );
   };
+
   return (
     <Form {...getFormProps(form)}>
       <div id={form.errorId}>{form.errors}</div>

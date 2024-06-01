@@ -105,7 +105,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
     const [isRemoving, setIsRemoving] = useState(false);
 
     const handleEdit = () => {
-      setOpen(true);
+      setOpen(true, card.id);
     };
 
     const handleRemove = () => {
