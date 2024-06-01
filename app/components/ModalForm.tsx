@@ -1,7 +1,6 @@
 import {
   getFormProps,
   getInputProps,
-  useField,
   useFormMetadata,
 } from "@conform-to/react";
 import { Form } from "@remix-run/react";
@@ -37,9 +36,7 @@ const validateClipboard = (text: string) => {
 export function ModalForm() {
   const { editingCard } = useModal();
   const form = useFormMetadata();
-  const [url] = useField("url");
-  const [id] = useField("id");
-  const fields = { url, id };
+  const fields = form.getFieldset();
 
   const handleClipboard = async () => {
     await readClipboard()
@@ -55,8 +52,7 @@ export function ModalForm() {
       form.update({ name: "id", value: editingCard.id });
       form.update({ name: "url", value: editingCard.url });
     } else {
-      form.update({ name: "id", value: "" });
-      form.update({ name: "url", value: "" });
+      form.reset();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editingCard?.id]);
