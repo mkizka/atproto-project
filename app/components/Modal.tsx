@@ -11,11 +11,7 @@ import {
   DialogTrigger,
 } from "./shadcn/ui/dialog";
 
-type Props = {
-  onSubmit: (input: string) => void;
-};
-
-export function Modal({ onSubmit }: Props) {
+export function Modal() {
   const { open, setOpen } = useModal();
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -32,7 +28,7 @@ export function Modal({ onSubmit }: Props) {
         <DialogHeader>
           <DialogTitle>カードを追加</DialogTitle>
         </DialogHeader>
-        <ModalForm onSubmit={onSubmit} />
+        <ModalForm />
       </DialogContent>
     </Dialog>
   );

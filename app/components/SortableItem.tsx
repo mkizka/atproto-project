@@ -10,6 +10,8 @@ import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/urls";
 
 import { BlueskyEmbed } from "./BlueskyEmbed";
 import { BlueskyIcon } from "./board/icons/BlueskyIcon";
+import { useBoard } from "./BoardProvider";
+import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import type { CardProps } from "./shadcn/ui/card";
 import { Card } from "./shadcn/ui/card";
@@ -90,8 +92,6 @@ function ItemInner({ card }: ItemInnerProps) {
 type ItemProps = {
   card: CardScheme;
   children?: ReactNode;
-  editCard?: (id: string) => void;
-  removeCard?: (id: string) => void;
   editable?: boolean;
   isOverlay?: boolean;
   isDragging?: boolean;
@@ -99,23 +99,13 @@ type ItemProps = {
 } & CardProps;
 
 export const Item = forwardRef<HTMLDivElement, ItemProps>(
-  (
-    {
-      card,
-      editCard,
-      removeCard,
-      editable,
-      isDragging,
-      isOverlay,
-      isSorting,
-      ...cardProps
-    },
-    ref,
-  ) => {
+  ({ card, editable, isDragging, isOverlay, isSorting, ...cardProps }, ref) => {
+    const { setOpen } = useModal();
+    const { removeCard } = useBoard();
     const [isRemoving, setIsRemoving] = useState(false);
 
     const handleEdit = () => {
-      editCard?.(card.id);
+      setOpen(true);
     };
 
     const handleRemove = () => {
@@ -123,7 +113,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
       if (!ok) return;
       setIsRemoving(true);
       setTimeout(() => {
-        removeCard?.(card.id);
+        removeCard(card.id);
       }, 200);
     };
 
@@ -173,9 +163,12 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
 );
 Item.displayName = "Item";
 
-export type SortableItemProps = Omit<ItemProps, "isDragging">;
+export type SortableItemProps = {
+  card: CardScheme;
+  editable?: boolean;
+};
 
-export function SortableItem(props: SortableItemProps) {
+export function SortableItem({ card, editable }: SortableItemProps) {
   const {
     attributes,
     listeners,
@@ -185,8 +178,8 @@ export function SortableItem(props: SortableItemProps) {
     isDragging,
     isSorting,
   } = useSortable({
-    id: props.card.id,
-    disabled: !props.editable,
+    id: card.id,
+    disabled: !editable,
   });
 
   const style = {
@@ -197,12 +190,13 @@ export function SortableItem(props: SortableItemProps) {
   return (
     <Item
       ref={setNodeRef}
+      card={card}
+      editable={editable}
       isDragging={isDragging}
       isSorting={isSorting}
       style={style}
       {...attributes}
       {...listeners}
-      {...props}
     />
   );
 }

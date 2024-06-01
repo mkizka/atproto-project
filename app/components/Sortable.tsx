@@ -19,17 +19,15 @@ import {
 } from "@dnd-kit/sortable";
 import { useState } from "react";
 
-import type { CardScheme } from "~/api/validator";
-
-import type { SortableItemProps } from "./SortableItem";
+import { useBoard } from "./BoardProvider";
 import { Item, SortableItem } from "./SortableItem";
 
 type Props = {
-  cards: CardScheme[];
-  setCards: (cards: CardScheme[]) => void;
-} & Omit<SortableItemProps, "card">;
+  editable?: boolean;
+};
 
-export function Sortable({ cards, setCards, ...sortableItemProps }: Props) {
+export function Sortable({ editable }: Props) {
+  const { cards, setCards } = useBoard();
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
   const activeCard = cards.find((card) => card.id === activeId);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
@@ -57,7 +55,7 @@ export function Sortable({ cards, setCards, ...sortableItemProps }: Props) {
     >
       <SortableContext items={cards} strategy={verticalListSortingStrategy}>
         {cards.map((card) => (
-          <SortableItem key={card.id} card={card} {...sortableItemProps} />
+          <SortableItem key={card.id} card={card} editable={editable} />
         ))}
       </SortableContext>
       <DragOverlay>

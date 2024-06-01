@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { resolveHandleIfNeeded } from "~/utils/urls";
 
+import { useBoard } from "./BoardProvider";
 import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import { Input } from "./shadcn/ui/input";
@@ -47,12 +48,9 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-type Props = {
-  onSubmit: (url: string) => void;
-};
-
-export function ModalForm({ onSubmit }: Props) {
+export function ModalForm() {
   const { setOpen } = useModal();
+  const { addCard } = useBoard();
   const [lastResult, setLastResult] = useState<SubmissionResult | null>(null);
   const [form, fields] = useForm<Schema>({
     lastResult,
@@ -68,7 +66,7 @@ export function ModalForm({ onSubmit }: Props) {
         .map((url) => url.toString())
         .match(
           (url) => {
-            onSubmit(url);
+            addCard({ url });
             setOpen(false);
           },
           (err) => alert(err),
