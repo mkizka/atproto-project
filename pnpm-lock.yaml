@@ -100,8 +100,8 @@ importers:
         specifier: 0.3.2
         version: 0.3.2
       '@mkizka/eslint-config':
-        specifier: ^5.2.0
-        version: 5.2.0(@typescript-eslint/eslint-plugin@7.10.0(@typescript-eslint/parser@7.10.0(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(tailwindcss@3.4.3)(typescript@5.4.5)
+        specifier: ^5.2.1
+        version: 5.2.1(@typescript-eslint/eslint-plugin@7.10.0(@typescript-eslint/parser@7.10.0(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(tailwindcss@3.4.3)(typescript@5.4.5)
       '@remix-run/dev':
         specifier: ^2.9.2
         version: 2.9.2(@remix-run/react@2.9.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.4.5))(@types/node@20.12.12)(typescript@5.4.5)(vite@5.2.11(@types/node@20.12.12))
@@ -838,8 +838,8 @@ packages:
   '@mdx-js/mdx@2.3.0':
     resolution: {integrity: sha512-jLuwRlz8DQfQNiUCJR50Y09CGPq3fLtmtUQfVrj79E0JWu3dvsVcxVIcfhR5h0iXu+/z++zDrYeiJqifRynJkA==}
 
-  '@mkizka/eslint-config@5.2.0':
-    resolution: {integrity: sha512-QANMW+e2NFFzwBEBKCwbXOLayBTvp0taaICF8FiArHba7SCYVZ0sqMgx8S1CfRcg7lFkGHGjJ/+QmXEGtOXC+w==}
+  '@mkizka/eslint-config@5.2.1':
+    resolution: {integrity: sha512-1uSMs9wV45VQnPl0AgTXIGjDClPIJ2+QcwE35Bo2Q4dm9DpVQxvVgO0d1YXn+t5+SXeAC4jfwzVXrjKL8YTshw==}
     peerDependencies:
       eslint: '>= 9'
 
@@ -5294,7 +5294,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@mkizka/eslint-config@5.2.0(@typescript-eslint/eslint-plugin@7.10.0(@typescript-eslint/parser@7.10.0(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(tailwindcss@3.4.3)(typescript@5.4.5)':
+  '@mkizka/eslint-config@5.2.1(@typescript-eslint/eslint-plugin@7.10.0(@typescript-eslint/parser@7.10.0(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(typescript@5.4.5))(eslint@9.3.0)(tailwindcss@3.4.3)(typescript@5.4.5)':
     dependencies:
       '@dword-design/eslint-plugin-import-alias': 5.0.0
       '@eslint/compat': 1.0.3

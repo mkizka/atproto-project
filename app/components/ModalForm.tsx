@@ -65,12 +65,8 @@ export function ModalForm({ onSubmit }: Props) {
         .andThen(resolveHandleInUrl)
         .map((url) => url.toString())
         .match(
-          (url) => {
-            onSubmit(url);
-          },
-          (err) => {
-            alert(err);
-          },
+          (url) => onSubmit(url),
+          (err) => alert(err),
         );
       const result = submission.reply();
       setLastResult(result);
@@ -82,12 +78,8 @@ export function ModalForm({ onSubmit }: Props) {
       .andThen(validateClipboard)
       .andThen(resolveHandleInUrl)
       .match(
-        (url) => {
-          form.update({ name: "url", value: url });
-        },
-        (err) => {
-          alert(err);
-        },
+        (url) => form.update({ name: "url", value: url }),
+        (err) => alert(err),
       );
   };
   return (
