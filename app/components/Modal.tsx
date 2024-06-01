@@ -20,10 +20,6 @@ import {
 } from "./shadcn/ui/dialog";
 import { Input } from "./shadcn/ui/input";
 
-type Props = {
-  onSubmit: (input: string) => void;
-} & DialogProps;
-
 const truncate = (text: string, length: number) => {
   return text.length > length ? text.slice(0, length) + "..." : text;
 };
@@ -56,7 +52,13 @@ const confirmToAdd = (url: string): Result<string, string> => {
   return err("キャンセルされました");
 };
 
-export function Modal({ onSubmit, ...props }: Props) {
+type Props = {
+  input: string;
+  setInput: (input: string) => void;
+  onSubmit: (input: string) => void;
+} & DialogProps;
+
+export function Modal({ input, setInput, onSubmit, ...props }: Props) {
   const ref = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: FormEvent) => {
@@ -112,6 +114,10 @@ export function Modal({ onSubmit, ...props }: Props) {
             ref={ref}
             placeholder="https://bsky.app/profile/..."
             className="w-full"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+            }}
             required
           />
           <DialogFooter>
