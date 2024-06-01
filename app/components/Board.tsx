@@ -27,7 +27,6 @@ type Props = {
 
 export function Board(props: Props) {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
   const [cards, setCards] = useState<CardScheme[]>(props.board.cards);
 
   const saveCards = (cards: CardScheme[]) => {
@@ -36,11 +35,7 @@ export function Board(props: Props) {
     setCards(cards);
   };
 
-  const editCard = (id: string) => {
-    const card = cards.find((card) => card.id === id);
-    if (card) {
-      setInput(card.url);
-    }
+  const editCard = () => {
     setOpen(true);
   };
 
@@ -50,7 +45,6 @@ export function Board(props: Props) {
   };
 
   const handleOpen = (open: boolean) => {
-    if (open) setInput("");
     setOpen(open);
   };
 
@@ -80,8 +74,6 @@ export function Board(props: Props) {
           <Modal
             open={open}
             onOpenChange={handleOpen}
-            input={input}
-            setInput={setInput}
             onSubmit={handleSubmit}
           />
         )}

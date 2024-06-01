@@ -23,6 +23,12 @@ importers:
       '@atproto/xrpc-server':
         specifier: ^0.5.1
         version: 0.5.1
+      '@conform-to/react':
+        specifier: ^1.1.4
+        version: 1.1.4(react@18.3.1)
+      '@conform-to/zod':
+        specifier: ^1.1.4
+        version: 1.1.4(zod@3.23.8)
       '@dnd-kit/core':
         specifier: ^6.1.0
         version: 6.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -408,6 +414,19 @@ packages:
     resolution: {integrity: sha512-l2M+Z8DO2vbvADOBNLbbh9y5ST1RY5sqkWOg/58GkUPBYou/cuNZ68SGQ644f1CvZ8kcOxyZtw06+dxWHIoN/w==}
     cpu: [x64]
     os: [win32]
+
+  '@conform-to/dom@1.1.4':
+    resolution: {integrity: sha512-NE763YdEs5nyiM3vBvC7c1mqyeTKRXRFsgS8Fni8DGvRwmbbLzgyF1jTwEmP5B8W0XXIvIPEPogyrm2LyVTFKQ==}
+
+  '@conform-to/react@1.1.4':
+    resolution: {integrity: sha512-RQSat9xnrfu4W/xja9acMSKt/vJWwn2kwec6EausUTkG2WJeuKTcEaEdqA4VZH3PtEK2kK1y/OXzJQGUPwgweQ==}
+    peerDependencies:
+      react: '>=18'
+
+  '@conform-to/zod@1.1.4':
+    resolution: {integrity: sha512-YqV9wgDbePR++uvhGVWUgn+Ae3G7vcAgoSaSGo87MJTs5Eb6IRvBiQh8x6GghWtr+BUylFAEF7MhN/cejwDlGg==}
+    peerDependencies:
+      zod: ^3.21.0
 
   '@connectrpc/connect-express@1.4.0':
     resolution: {integrity: sha512-e09oyHF+P7GSkU1x4WBzGTHFCORcHWFH67rhxDISonwNYRXevOfIo1fwDRBKJUvyddoPlpZJDaKIv9TuKO1tQQ==}
@@ -4940,6 +4959,18 @@ snapshots:
 
   '@cbor-extract/cbor-extract-win32-x64@2.2.0':
     optional: true
+
+  '@conform-to/dom@1.1.4': {}
+
+  '@conform-to/react@1.1.4(react@18.3.1)':
+    dependencies:
+      '@conform-to/dom': 1.1.4
+      react: 18.3.1
+
+  '@conform-to/zod@1.1.4(zod@3.23.8)':
+    dependencies:
+      '@conform-to/dom': 1.1.4
+      zod: 3.23.8
 
   '@connectrpc/connect-express@1.4.0(@bufbuild/protobuf@1.9.0)(@connectrpc/connect-node@1.4.0(@bufbuild/protobuf@1.9.0)(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.9.0)))(@connectrpc/connect@1.4.0(@bufbuild/protobuf@1.9.0))':
     dependencies:

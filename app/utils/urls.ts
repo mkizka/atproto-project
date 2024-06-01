@@ -26,7 +26,8 @@ export const isBlueskyPostUrl = (url: URL) => {
 // https://bsky.app/profile/example.com/post/hijklmnop...
 // ↓
 // https://bsky.app/profile/did:plc:abcdefg.../post/hijklmnop...
-export const resolveHandleIfNeeded = async (url: URL) => {
+export const resolveHandleIfNeeded = async (original: string) => {
+  const url = new URL(original);
   if (!isBlueskyProfileUrl(url) && !isBlueskyPostUrl(url)) {
     return url.toString();
   }
