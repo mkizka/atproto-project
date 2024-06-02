@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { LinkIcon, LoaderCircle, PencilLine, X } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { type FC, forwardRef, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
@@ -16,10 +16,12 @@ import { Button } from "./shadcn/ui/button";
 import type { CardProps } from "./shadcn/ui/card";
 import { Card } from "./shadcn/ui/card";
 
+type CardIconComponent = FC<ComponentProps<"svg">>;
+
 type ParsedCard =
   | {
       type: "link";
-      icon: FC<React.SVGProps<SVGSVGElement>>;
+      icon: CardIconComponent;
       text: string;
       url: string;
     }
@@ -27,6 +29,10 @@ type ParsedCard =
       type: "embed";
       blueskyUri: string;
     };
+
+const cardIcons: Record<string, CardIconComponent | undefined> = {
+  "bsky.app": BlueskyIcon,
+};
 
 const parseCard = (card: CardScheme): ParsedCard => {
   const url = new URL(card.url);
@@ -44,18 +50,10 @@ const parseCard = (card: CardScheme): ParsedCard => {
       url: card.url,
     };
   }
-  if (url.hostname === "bsky.app") {
-    return {
-      type: "link",
-      icon: BlueskyIcon,
-      text: card.url,
-      url: card.url,
-    };
-  }
   return {
     type: "link",
-    icon: LinkIcon,
-    text: card.url,
+    icon: cardIcons[url.hostname] || LinkIcon,
+    text: card.text || card.url,
     url: card.url,
   };
 };

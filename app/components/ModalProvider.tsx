@@ -19,6 +19,7 @@ const ModalContext = createContext<ModalContextValue | null>(null);
 
 const schema = z.object({
   url: z.string().url({ message: "URLを入力してください" }),
+  text: z.string().optional(),
   id: z.string().optional(),
 });
 

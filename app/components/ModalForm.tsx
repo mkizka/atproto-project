@@ -58,9 +58,21 @@ export function ModalForm() {
   }, [editingCard?.id]);
 
   return (
-    <Form {...getFormProps(form)}>
-      <div id={form.errorId}>{form.errors}</div>
-      <div className="mb-2">
+    <Form {...getFormProps(form)} className="flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
+        <Label htmlFor={fields.text.id}>テキスト</Label>
+        <Input
+          {...getInputProps(fields.text, { type: "text" })}
+          // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
+          key={fields.text.key}
+        />
+        {fields.text.errors && (
+          <div id={fields.text.errorId} className="text-destructive">
+            {fields.text.errors}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-1">
         <Label htmlFor={fields.url.id}>URL</Label>
         <Input
           {...getInputProps(fields.url, { type: "url" })}
@@ -68,11 +80,13 @@ export function ModalForm() {
           key={fields.url.key}
           placeholder="https://bsky.app/profile/..."
         />
-        <div id={fields.url.errorId} className="mt-2 text-destructive">
-          {fields.url.errors}
-        </div>
+        {fields.text.errors && (
+          <div id={fields.url.errorId} className="text-destructive">
+            {fields.url.errors}
+          </div>
+        )}
       </div>
-      <div className="mb-2 flex justify-end gap-2">
+      <div className="flex justify-end gap-2">
         <Button type="button" variant="secondary" onClick={handleClipboard}>
           コピーしたURLを貼り付け
         </Button>
