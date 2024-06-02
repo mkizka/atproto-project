@@ -6,7 +6,12 @@ import { type FC, forwardRef, useState } from "react";
 
 import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
-import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/urls";
+import {
+  atUri,
+  isBlueskyPostUrl,
+  isBlueskyProfileUrl,
+  isTwitterProfileUrl,
+} from "~/utils/urls";
 
 import { BlueskyEmbed } from "./BlueskyEmbed";
 import { useBoard } from "./BoardProvider";
@@ -49,7 +54,15 @@ const parseCard = (card: CardScheme): ParsedCard => {
     return {
       type: "link",
       icon: BlueskyIcon,
-      text: `@${url.pathname.split("/")[2]}`,
+      text: card.text || `@${url.pathname.split("/")[2]}`,
+      url: card.url,
+    };
+  }
+  if (isTwitterProfileUrl(url)) {
+    return {
+      type: "link",
+      icon: TwitterIcon,
+      text: card.text || `@${url.pathname.split("/")[1]}`,
       url: card.url,
     };
   }

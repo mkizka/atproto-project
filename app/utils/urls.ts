@@ -19,16 +19,19 @@ export const isBlueskyPostUrl = (url: URL) => {
   );
 };
 
-// https://bsky.app/profile/example.com
-// ↓
-// https://bsky.app/profile/did:plc:abcdefg...
-//
+// https://twitter.com/example
+// https://x.com/example
+export const isTwitterProfileUrl = (url: URL) => {
+  const paths = url.pathname.split("/");
+  return ["twitter.com", "x.com"].includes(url.hostname) && paths.length === 2;
+};
+
 // https://bsky.app/profile/example.com/post/hijklmnop...
 // ↓
 // https://bsky.app/profile/did:plc:abcdefg.../post/hijklmnop...
 export const resolveHandleIfNeeded = async (original: string) => {
   const url = new URL(original);
-  if (!isBlueskyProfileUrl(url) && !isBlueskyPostUrl(url)) {
+  if (!isBlueskyPostUrl(url)) {
     return url.toString();
   }
   const [_, profile, handle, ...rest] = url.pathname.split("/");
