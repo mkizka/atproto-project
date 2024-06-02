@@ -19,11 +19,17 @@ export const isBlueskyPostUrl = (url: URL) => {
   );
 };
 
-// https://twitter.com/example
-// https://x.com/example
+// https://twitter.com/x
+// https://x.com/x
 export const isTwitterProfileUrl = (url: URL) => {
   const paths = url.pathname.split("/");
   return ["twitter.com", "x.com"].includes(url.hostname) && paths.length === 2;
+};
+
+// https://github.com/github
+export const isGitHubProfileUrl = (url: URL) => {
+  const paths = url.pathname.split("/");
+  return url.hostname === "github.com" && paths.length === 2;
 };
 
 // https://bsky.app/profile/example.com/post/hijklmnop...
@@ -32,11 +38,11 @@ export const isTwitterProfileUrl = (url: URL) => {
 export const resolveHandleIfNeeded = async (original: string) => {
   const url = new URL(original);
   if (!isBlueskyPostUrl(url)) {
-    return url.toString();
+    return original;
   }
   const [_, profile, handle, ...rest] = url.pathname.split("/");
   if (handle.startsWith("did:")) {
-    return url.toString();
+    return original;
   }
   const response = await publicBskyAgent.resolveHandle({ handle });
   const resolvedUrl = new URL(url.origin);

@@ -10,12 +10,14 @@ import {
   atUri,
   isBlueskyPostUrl,
   isBlueskyProfileUrl,
+  isGitHubProfileUrl,
   isTwitterProfileUrl,
 } from "~/utils/urls";
 
 import { BlueskyEmbed } from "./BlueskyEmbed";
 import { useBoard } from "./BoardProvider";
 import { BlueskyIcon } from "./icons/BlueskyIcon";
+import { GitHubIcon } from "./icons/GitHubIcon";
 import { TwitterIcon } from "./icons/TwitterIcon";
 import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
@@ -40,10 +42,12 @@ const cardIcons: Record<string, CardIconComponent | undefined> = {
   "bsky.app": BlueskyIcon,
   "x.com": TwitterIcon,
   "twitter.com": TwitterIcon,
+  "github.com": GitHubIcon,
 };
 
 const parseCard = (card: CardScheme): ParsedCard => {
   const url = new URL(card.url);
+  const paths = url.pathname.split("/");
   if (isBlueskyPostUrl(url)) {
     return {
       type: "embed",
@@ -54,7 +58,7 @@ const parseCard = (card: CardScheme): ParsedCard => {
     return {
       type: "link",
       icon: BlueskyIcon,
-      text: card.text || `@${url.pathname.split("/")[2]}`,
+      text: card.text || `@${paths[2]}`,
       url: card.url,
     };
   }
@@ -62,7 +66,15 @@ const parseCard = (card: CardScheme): ParsedCard => {
     return {
       type: "link",
       icon: TwitterIcon,
-      text: card.text || `@${url.pathname.split("/")[1]}`,
+      text: card.text || `@${paths[1]}`,
+      url: card.url,
+    };
+  }
+  if (isGitHubProfileUrl(url)) {
+    return {
+      type: "link",
+      icon: GitHubIcon,
+      text: card.text || `@${paths[1]}`,
       url: card.url,
     };
   }
