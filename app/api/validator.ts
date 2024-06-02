@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const cardSchema = z.object({
+const cardSchema = z.object({
   id: z.string(),
   url: z.string().url(),
   text: z.string().optional(),
@@ -8,20 +8,20 @@ export const cardSchema = z.object({
 
 export type CardScheme = z.infer<typeof cardSchema>;
 
-export const rawBoardScheme = z
+export const boardScheme = z
   .object({
     $type: z.literal("dev.mkizka.test.profile.board"),
     id: z.string(),
-    // 後でcardSchemaでフィルタするのでカードの内容はこの限りでなくてもいい
-    cards: cardSchema.partial().array(),
+    cards: z.unknown().array(),
     createdAt: z.string(),
     updatedAt: z.string(),
   })
-  // cards以外は使い道を決めていないのでoptionalにしておく
-  .partial();
+  .partial()
+  .transform((data) => {
+    const validCards = data.cards?.filter(
+      (card): card is CardScheme => cardSchema.safeParse(card).success,
+    );
+    return { ...data, cards: validCards ?? [] };
+  });
 
-export type RawBoardScheme = z.infer<typeof rawBoardScheme>;
-
-export type BoardScheme = Omit<RawBoardScheme, "cards"> & {
-  cards: CardScheme[];
-};
+export type BoardScheme = z.infer<typeof boardScheme>;

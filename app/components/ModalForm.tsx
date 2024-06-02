@@ -86,7 +86,7 @@ export function ModalForm() {
           key={fields.url.key}
           placeholder="https://bsky.app/profile/..."
         />
-        {fields.text.errors && (
+        {fields.url.errors && (
           <div id={fields.url.errorId} className="text-destructive">
             {fields.url.errors}
           </div>

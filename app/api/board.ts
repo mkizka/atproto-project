@@ -1,31 +1,14 @@
-import type { Ok } from "neverthrow";
-import { ok, Result, ResultAsync } from "neverthrow";
+import { Result, ResultAsync } from "neverthrow";
 import type { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
 import { myAgent } from "./agent";
-import type { BoardScheme, RawBoardScheme } from "./validator";
-import { cardSchema, rawBoardScheme } from "./validator";
+import { boardScheme } from "./validator";
 
 const parseBoard = Result.fromThrowable(
-  (input: unknown) => rawBoardScheme.parse(input),
+  (input: unknown) => boardScheme.parse(input),
   (e) => fromZodError(e as ZodError),
 );
-
-const filterCards = (board: RawBoardScheme): Ok<BoardScheme, never> => {
-  return ok({
-    ...board,
-    cards: (board.cards ?? [])
-      .map((card) => {
-        const parsed = cardSchema.safeParse(card);
-        if (parsed.success) {
-          return parsed.data;
-        }
-        return null;
-      })
-      .filter(Boolean) as BoardScheme["cards"],
-  });
-};
 
 export const getBoard = (...args: Parameters<typeof myAgent.getBoard>) => {
   return ResultAsync.fromPromise(
@@ -33,8 +16,7 @@ export const getBoard = (...args: Parameters<typeof myAgent.getBoard>) => {
     () => new Error("Failed to get board"),
   )
     .map((response) => response.value)
-    .andThen(parseBoard)
-    .andThen(filterCards);
+    .andThen(parseBoard);
 };
 
 export const getSessionBoard = () => {
@@ -43,6 +25,5 @@ export const getSessionBoard = () => {
     () => new Error("Failed to login"),
   )
     .map((response) => response.value)
-    .andThen(parseBoard)
-    .andThen(filterCards);
+    .andThen(parseBoard);
 };
