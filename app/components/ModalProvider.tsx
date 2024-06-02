@@ -1,10 +1,12 @@
 import { FormProvider, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { ResultAsync } from "neverthrow";
 import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 import { z } from "zod";
 
 import type { CardScheme } from "~/api/validator";
+import { resolveHandleIfNeeded } from "~/utils/urls";
 
 import { useBoard } from "./BoardProvider";
 
@@ -17,17 +19,35 @@ type ModalContextValue = {
 
 const ModalContext = createContext<ModalContextValue | null>(null);
 
-const schema = z.object({
-  url: z.string().url({ message: "URLを入力してください" }),
-  text: z.string().optional(),
-  id: z.string().optional(),
-});
+const schema = z
+  .object({
+    url: z.string().url({ message: "URLを入力してください" }),
+    text: z.string().optional(),
+    id: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      return data.url || data.text;
+    },
+    { message: "テキストかURLどちらかを入力してください" },
+  );
 
 type Schema = z.infer<typeof schema>;
 
 type Props = {
   children: ReactNode;
 };
+
+const resolveHandle = ResultAsync.fromThrowable(
+  async (card: Schema) => {
+    if (!card.url) return card;
+    return {
+      ...card,
+      url: await resolveHandleIfNeeded(card.url),
+    };
+  },
+  () => "Blueskyのハンドルを解決出来ませんでした",
+);
 
 export function ModalProvider({ children }: Props) {
   const [open, setOpen] = useState(false);
@@ -39,14 +59,19 @@ export function ModalProvider({ children }: Props) {
     onValidate({ formData }) {
       return parseWithZod(formData, { schema });
     },
-    onSubmit: (event, { submission }) => {
+    onSubmit: async (event, { submission }) => {
       event.preventDefault();
       if (!submission) throw new Error("予期せぬエラーが発生しました");
       const formCard = submission.payload as Schema;
-      if (formCard.id) {
-        replaceCard({ ...formCard, id: formCard.id });
+      const resolvedCard = await resolveHandle(formCard);
+      if (resolvedCard.isErr()) {
+        alert(resolvedCard.error);
+        return;
+      }
+      if (resolvedCard.value.id) {
+        replaceCard({ ...resolvedCard.value, id: resolvedCard.value.id });
       } else {
-        addCard(formCard);
+        addCard(resolvedCard.value);
       }
       setOpen(false);
     },

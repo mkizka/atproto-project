@@ -49,8 +49,9 @@ export function ModalForm() {
 
   useLayoutEffect(() => {
     if (editingCard) {
-      form.update({ name: "id", value: editingCard.id });
-      form.update({ name: "url", value: editingCard.url });
+      Object.entries(editingCard).forEach(([key, value]) => {
+        form.update({ name: key, value });
+      });
     } else {
       form.reset();
     }
@@ -59,6 +60,11 @@ export function ModalForm() {
 
   return (
     <Form {...getFormProps(form)} className="flex flex-col gap-2">
+      {form.errors && (
+        <div id={form.errorId} className="text-destructive">
+          {form.errors}
+        </div>
+      )}
       <div className="flex flex-col gap-1">
         <Label htmlFor={fields.text.id}>テキスト</Label>
         <Input
