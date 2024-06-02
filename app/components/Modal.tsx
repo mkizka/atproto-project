@@ -24,7 +24,7 @@ export function Modal() {
           <p className="mr-6">カードを追加</p>
         </Card>
       </DialogTrigger>
-      <DialogContent className="top-48 max-w-[90vw] gap-2 sm:max-w-screen-sm">
+      <DialogContent className="top-48 max-w-[90vw] gap-4 sm:max-w-screen-sm">
         <DialogHeader>
           <DialogTitle>カードを追加</DialogTitle>
         </DialogHeader>

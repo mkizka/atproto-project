@@ -59,18 +59,38 @@ export function ModalForm() {
   }, [editingCard?.id]);
 
   return (
-    <Form {...getFormProps(form)} className="flex flex-col gap-2">
+    <Form {...getFormProps(form)} className="flex flex-col gap-4">
       {form.errors && (
         <div id={form.errorId} className="text-destructive">
           {form.errors}
         </div>
       )}
-      <div className="flex flex-col gap-1">
-        <Label htmlFor={fields.text.id}>テキスト</Label>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor={fields.url.id}>URL</Label>
+        <div className="flex gap-1">
+          <Input
+            {...getInputProps(fields.url, { type: "url" })}
+            // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
+            key={fields.url.key}
+            placeholder="https://bsky.app/profile/..."
+          />
+          <Button type="button" variant="secondary" onClick={handleClipboard}>
+            コピーから貼り付け
+          </Button>
+        </div>
+        {fields.url.errors && (
+          <div id={fields.url.errorId} className="text-destructive">
+            {fields.url.errors}
+          </div>
+        )}
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label htmlFor={fields.text.id}>カードのタイトル</Label>
         <Input
           {...getInputProps(fields.text, { type: "text" })}
           // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
           key={fields.text.key}
+          placeholder="無くてもいい"
         />
         {fields.text.errors && (
           <div id={fields.text.errorId} className="text-destructive">
@@ -78,29 +98,14 @@ export function ModalForm() {
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor={fields.url.id}>URL</Label>
-        <Input
-          {...getInputProps(fields.url, { type: "url" })}
-          // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
-          key={fields.url.key}
-          placeholder="https://bsky.app/profile/..."
-        />
-        {fields.url.errors && (
-          <div id={fields.url.errorId} className="text-destructive">
-            {fields.url.errors}
-          </div>
-        )}
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="secondary" onClick={handleClipboard}>
-          コピーしたURLを貼り付け
+      <div className="flex items-center">
+        <div className="text-balance text-sm text-muted-foreground">
+          「コピーから貼り付け」を使うにはクリップボードの許可が必要です
+        </div>
+        <Button type="submit" className="ml-auto">
+          追加
         </Button>
-        <Button type="submit">追加</Button>
       </div>
-      <p className="text-balance text-end text-sm text-muted-foreground">
-        「コピーしたURLを追加」を使うにはクリップボードの許可が必要です
-      </p>
       <input
         {...getInputProps(fields.id, { type: "text" })}
         // https://github.com/edmundhung/conform/issues/600#issuecomment-2074577745
