@@ -9,8 +9,9 @@ import { cn } from "~/utils/cn";
 import { atUri, isBlueskyPostUrl, isBlueskyProfileUrl } from "~/utils/urls";
 
 import { BlueskyEmbed } from "./BlueskyEmbed";
-import { BlueskyIcon } from "./board/icons/BlueskyIcon";
 import { useBoard } from "./BoardProvider";
+import { BlueskyIcon } from "./icons/BlueskyIcon";
+import { TwitterIcon } from "./icons/TwitterIcon";
 import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import type { CardProps } from "./shadcn/ui/card";
@@ -32,6 +33,8 @@ type ParsedCard =
 
 const cardIcons: Record<string, CardIconComponent | undefined> = {
   "bsky.app": BlueskyIcon,
+  "x.com": TwitterIcon,
+  "twitter.com": TwitterIcon,
 };
 
 const parseCard = (card: CardScheme): ParsedCard => {
