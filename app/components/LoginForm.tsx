@@ -1,7 +1,7 @@
-import { useNavigate } from "@remix-run/react";
-import { err, ok, ResultAsync } from "neverthrow";
-import type { FormEvent } from "react";
-import { useRef } from "react";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { useNavigate, useNavigation } from "@remix-run/react";
+import { useState } from "react";
 import { z } from "zod";
 
 import { useSession } from "./SessionProvider";
@@ -10,50 +10,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "./shadcn/ui/card";
 import { Input } from "./shadcn/ui/input";
 import { Label } from "./shadcn/ui/label";
 
-const formScheme = z.object({
-  identifier: z.string().min(1, "ハンドルは1文字以上である必要があります"),
+const schema = z.object({
+  identifier: z
+    .string({ required_error: "入力してください" })
+    .regex(/\./, "example.bsky.socialのように指定してください")
+    .min(1, "ハンドルは1文字以上である必要があります"),
   password: z
-    .string()
+    .string({ required_error: "入力してください" })
     .min(1, "パスワードは1文字以上である必要があります")
     .regex(/^[a-z0-9-]+$/, "パスワードはアプリパスワードしか使用できません"),
 });
 
-const validateForm = (form: { identifier: string; password: string }) => {
-  const result = formScheme.safeParse(form);
-  if (!result.success) {
-    return err(result.error.issues[0].message);
-  }
-  return ok(result.data);
-};
+type Schema = z.infer<typeof schema>;
 
 export function LoginForm() {
   const session = useSession();
   const navigate = useNavigate();
-  const handleRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  const navigation = useNavigation();
+  const [submitting, setSubmitting] = useState(false);
 
-  const loginWithBluesky = ResultAsync.fromThrowable(
-    session.login,
-    () => "ログインに失敗しました",
-  );
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    void ok({
-      identifier: handleRef.current!.value,
-      password: passwordRef.current!.value,
-    })
-      .andThen(validateForm)
-      .asyncAndThen(loginWithBluesky)
-      .match(
-        (response) => {
-          navigate(`/board/${response.handle}`);
-        },
-        (error) => {
-          alert(error);
-        },
-      );
-  };
+  const [form, fields] = useForm<Schema>({
+    constraint: getZodConstraint(schema),
+    onValidate({ formData }) {
+      setSubmitting(true);
+      return parseWithZod(formData, { schema });
+    },
+    onSubmit: async (event, { submission }) => {
+      event.preventDefault();
+      if (!submission) throw new Error("予期せぬエラーが発生しました");
+      try {
+        const response = await session.login(submission.payload as Schema);
+        navigate(`/board/${response.handle}`);
+      } catch {
+        alert("ログインに失敗しました");
+      }
+      setSubmitting(false);
+    },
+  });
 
   return (
     <Card>
@@ -61,30 +54,44 @@ export function LoginForm() {
         <CardTitle>Blueskyアカウントでログイン</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="grid gap-4">
+        <form {...getFormProps(form)} className="grid gap-4">
+          {form.errors && (
+            <div id={form.errorId} className="text-destructive">
+              {form.errors}
+            </div>
+          )}
           <div className="grid gap-2">
             <Label htmlFor="handle">ハンドル(またはDID)</Label>
             <Input
-              id="handle"
+              {...getInputProps(fields.identifier, { type: "text" })}
               placeholder="example.bsky.social"
               autoComplete="username"
-              required
-              ref={handleRef}
             />
+            {fields.identifier.errors && (
+              <div id={fields.identifier.errorId} className="text-destructive">
+                {fields.identifier.errors}
+              </div>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="password">アプリパスワード</Label>
             <Input
-              id="password"
-              type="password"
+              {...getInputProps(fields.password, { type: "password" })}
               placeholder="abcd-efgh-ijkl-mnop"
               autoComplete="current-password"
-              required
-              ref={passwordRef}
             />
+            {fields.password.errors && (
+              <div id={fields.password.errorId} className="text-destructive">
+                {fields.password.errors}
+              </div>
+            )}
           </div>
           <div className="flex justify-end">
-            <Button>ログイン</Button>
+            <Button>
+              {submitting || navigation.state === "loading"
+                ? "ログイン中..."
+                : "ログイン"}
+            </Button>
           </div>
         </form>
       </CardContent>
