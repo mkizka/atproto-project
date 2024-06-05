@@ -88,16 +88,17 @@ const parseCard = (card: CardScheme): ParsedCard => {
 
 type ItemInnerProps = {
   card: CardScheme;
+  editable?: boolean;
 };
 
-function ItemInner({ card }: ItemInnerProps) {
+function ItemInner({ card, editable }: ItemInnerProps) {
   const parsed = parseCard(card);
 
   if (parsed.type === "embed") {
     return (
       <div className="relative size-full">
         {/* クリック領域に被せて並び替え可能にする */}
-        <div className="absolute size-full" />
+        {editable && <div className="absolute size-full" />}
         <BlueskyEmbed blueskyUri={parsed.blueskyUri} />
         <LoaderCircle className="absolute inset-0 -z-10 m-auto size-8 animate-spin stroke-current text-muted-foreground" />
       </div>
@@ -161,7 +162,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
           suppressHydrationWarning
           {...cardProps}
         >
-          <ItemInner card={card} />
+          <ItemInner card={card} editable={editable} />
         </div>
         {editable && !isSorting && (
           <div className="absolute right-2 top-2 flex gap-2 opacity-80">
