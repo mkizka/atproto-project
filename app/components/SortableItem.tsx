@@ -104,11 +104,13 @@ function ItemInner({ card, editable }: ItemInnerProps) {
       </div>
     );
   }
+  const cardProps = editable
+    ? ({ as: "div" } as const)
+    : ({ as: "a", href: parsed.url } as const);
   return (
     <Card
-      as="a"
+      {...cardProps}
       className="flex h-16 min-w-0 flex-1 items-center gap-4 p-4"
-      href={parsed.url}
     >
       <parsed.icon className="size-8" />
       <p className="flex-1 truncate">{parsed.text}</p>
