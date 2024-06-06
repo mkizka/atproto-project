@@ -26,13 +26,13 @@ export default function Index() {
             },
             {
               id: "2",
-              text: "ここを長押しで並び替えられます",
-              url: location.href,
+              text: "Blueskyへのリンク",
+              url: "https://bsky.app/profile/bsky.app",
             },
             {
               id: "3",
-              text: "この内容はリロードすると元に戻ります",
-              url: location.href,
+              text: "Xへのリンク",
+              url: "https://x.com/x",
             },
           ],
         }}
