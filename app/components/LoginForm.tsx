@@ -39,8 +39,8 @@ export function LoginForm() {
       event.preventDefault();
       if (!submission) throw new Error("予期せぬエラーが発生しました");
       try {
-        const response = await session.login(submission.payload as Schema);
-        navigate(`/board/${response.handle}`);
+        await session.login(submission.payload as Schema);
+        navigate(`/edit`);
       } catch {
         alert("ログインに失敗しました");
       }

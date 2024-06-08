@@ -1,11 +1,10 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 
-import { myAgent } from "~/api/agent";
 import type { BoardScheme, CardScheme } from "~/api/validator";
 
 type BoardContextValue = {
-  cards: CardScheme[];
+  value: BoardScheme;
   setCards: (cards: CardScheme[]) => void;
   replaceCard: (card: CardScheme) => void;
   addCard: (card: Omit<CardScheme, "id">) => void;
@@ -20,40 +19,39 @@ type Props = {
 };
 
 export function BoardProvider({ children, board }: Props) {
-  const [value, setValue] = useState<CardScheme[]>(board.cards);
-
-  const updateBoard = (newCards: CardScheme[]) => {
-    return myAgent.updateBoard({ ...board, cards: newCards });
-  };
-
-  const setCards: BoardContextValue["setCards"] = (cards) => {
-    setValue(cards);
-    void updateBoard(cards);
-  };
+  const [cards, setCards] = useState<CardScheme[]>(board.cards);
 
   const addCard: BoardContextValue["addCard"] = (card) => {
-    const newCards = [...value, { ...card, id: crypto.randomUUID() }];
-    setValue(newCards);
-    void updateBoard(newCards);
+    const newCards = [...cards, { ...card, id: crypto.randomUUID() }];
+    setCards(newCards);
   };
 
   const replaceCard: BoardContextValue["replaceCard"] = (card) => {
-    const newCards = value.map((currentCard) =>
+    const newCards = cards.map((currentCard) =>
       currentCard.id === card.id ? card : currentCard,
     );
-    setValue(newCards);
-    void updateBoard(newCards);
+    setCards(newCards);
   };
 
   const removeCard: BoardContextValue["removeCard"] = (id) => {
-    const newCards = value.filter((card) => card.id !== id);
-    setValue(newCards);
-    void updateBoard(newCards);
+    const newCards = cards.filter((card) => card.id !== id);
+    setCards(newCards);
+  };
+
+  const value = {
+    ...board,
+    cards,
   };
 
   return (
     <BoardContext.Provider
-      value={{ cards: value, setCards, addCard, replaceCard, removeCard }}
+      value={{
+        value,
+        setCards,
+        addCard,
+        replaceCard,
+        removeCard,
+      }}
     >
       {children}
     </BoardContext.Provider>

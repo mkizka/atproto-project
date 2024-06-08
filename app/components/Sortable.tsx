@@ -27,9 +27,9 @@ type Props = {
 };
 
 export function Sortable({ editable }: Props) {
-  const { cards, setCards } = useBoard();
+  const board = useBoard();
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null);
-  const activeCard = cards.find((card) => card.id === activeId);
+  const activeCard = board.value.cards.find((card) => card.id === activeId);
   const sensors = useSensors(useSensor(PointerSensor), useSensor(TouchSensor));
 
   function handleDragStart(event: DragStartEvent) {
@@ -38,10 +38,14 @@ export function Sortable({ editable }: Props) {
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
-      const oldIndex = cards.findIndex((item) => item.id === active.id);
-      const newIndex = cards.findIndex((item) => item.id === over!.id);
-      const movedCards = arrayMove(cards, oldIndex, newIndex);
-      setCards(movedCards);
+      const oldIndex = board.value.cards.findIndex(
+        (item) => item.id === active.id,
+      );
+      const newIndex = board.value.cards.findIndex(
+        (item) => item.id === over!.id,
+      );
+      const movedCards = arrayMove(board.value.cards, oldIndex, newIndex);
+      board.setCards(movedCards);
     }
     setActiveId(null);
   };
@@ -53,8 +57,11 @@ export function Sortable({ editable }: Props) {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={cards} strategy={verticalListSortingStrategy}>
-        {cards.map((card) => (
+      <SortableContext
+        items={board.value.cards}
+        strategy={verticalListSortingStrategy}
+      >
+        {board.value.cards.map((card) => (
           <SortableItem key={card.id} card={card} editable={editable} />
         ))}
       </SortableContext>

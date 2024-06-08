@@ -52,7 +52,7 @@ const resolveHandle = ResultAsync.fromThrowable(
 export function ModalProvider({ children }: Props) {
   const [open, setOpen] = useState(false);
   const [editingCard, setEditingCard] = useState<CardScheme | null>(null);
-  const { cards, addCard, replaceCard } = useBoard();
+  const board = useBoard();
 
   const [form] = useForm<Schema>({
     constraint: getZodConstraint(schema),
@@ -69,9 +69,9 @@ export function ModalProvider({ children }: Props) {
         return;
       }
       if (resolvedCard.value.id) {
-        replaceCard({ ...resolvedCard.value, id: resolvedCard.value.id });
+        board.replaceCard({ ...resolvedCard.value, id: resolvedCard.value.id });
       } else {
-        addCard(resolvedCard.value);
+        board.addCard(resolvedCard.value);
       }
       setOpen(false);
     },
@@ -79,7 +79,7 @@ export function ModalProvider({ children }: Props) {
 
   const handleOpen: ModalContextValue["setOpen"] = (open, cardId) => {
     setOpen(open);
-    const card = cards.find((card) => card.id === cardId);
+    const card = board.value.cards.find((card) => card.id === cardId);
     setEditingCard(card ?? null);
   };
 
