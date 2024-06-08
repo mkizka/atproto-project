@@ -3,6 +3,9 @@ import { ArrowUp } from "lucide-react";
 
 import { Board } from "~/components/Board";
 import { LoginForm } from "~/components/LoginForm";
+import { useSession } from "~/components/SessionProvider";
+import { Button } from "~/components/shadcn/ui/button";
+import { Card } from "~/components/shadcn/ui/card";
 
 export const meta: MetaFunction = () => {
   return [
@@ -12,6 +15,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
+  const session = useSession();
   return (
     <div className="grid gap-8">
       <Board
@@ -41,7 +45,15 @@ export default function Index() {
         <ArrowUp className="size-12" />
         <p className="text-xl">こういうのを作ろう</p>
       </div>
-      <LoginForm />
+      {session.data ? (
+        <Card className="flex justify-center p-8">
+          <Button size="lg" asChild>
+            <a href={`/board/${session.data.handle}`}>作りに行く</a>
+          </Button>
+        </Card>
+      ) : (
+        <LoginForm />
+      )}
     </div>
   );
 }
