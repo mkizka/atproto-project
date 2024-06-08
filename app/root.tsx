@@ -5,8 +5,10 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useNavigation,
 } from "@remix-run/react";
 
+import { HydrateFallback } from "~/components/HydrateFallback";
 import stylesheet from "~/tailwind.css?url";
 
 import { myAgent } from "./api/agent";
@@ -15,8 +17,6 @@ import { SessionProvider } from "./components/SessionProvider";
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
 ];
-
-export { HydrateFallback } from "~/components/HydrateFallback";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -42,14 +42,24 @@ export async function clientLoader() {
   return null;
 }
 
+const Content = () => {
+  const navigation = useNavigation();
+  if (navigation.state === "loading") {
+    return <HydrateFallback />;
+  }
+  return <Outlet />;
+};
+
 export default function App() {
   return (
     <SessionProvider>
       <main className="flex justify-center">
         <div className="w-full max-w-[95vw] sm:max-w-screen-sm">
-          <Outlet />
+          <Content />
         </div>
       </main>
     </SessionProvider>
   );
 }
+
+export { HydrateFallback };

@@ -1,6 +1,6 @@
 import type { AtpAgentLoginOpts, AtpSessionData } from "@atproto/api";
 import type { ReactNode } from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 
 import { myAgent } from "~/api/agent";
 
@@ -16,7 +16,14 @@ type Props = {
 };
 
 export function SessionProvider({ children }: Props) {
-  const [data, setData] = useState<AtpSessionData | null>(myAgent.getSession());
+  const [data, setData] = useState<AtpSessionData | null>(null);
+
+  useLayoutEffect(() => {
+    const session = myAgent.getSession();
+    if (session) {
+      setData(session);
+    }
+  }, []);
 
   const login = async (options: AtpAgentLoginOpts) => {
     const response = await myAgent.login(options);
