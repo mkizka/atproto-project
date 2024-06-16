@@ -74,8 +74,15 @@ export function ModalForm() {
             key={fields.url.key}
             placeholder="https://bsky.app/profile/..."
           />
-          <Button type="button" variant="secondary" onClick={handleClipboard}>
-            コピーから貼り付け
+          <Button
+            type="button"
+            variant="secondary"
+            className="text-xs sm:text-sm"
+            onClick={handleClipboard}
+          >
+            コピーから
+            <br className="sm:hidden" />
+            貼り付け
           </Button>
         </div>
         {fields.url.errors && (
