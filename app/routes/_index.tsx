@@ -48,7 +48,7 @@ export default function Index() {
       {session.data ? (
         <Card className="flex justify-center p-8">
           <Button size="lg" asChild>
-            <a href={`/board/${session.data.handle}`}>作りに行く</a>
+            <a href={`/edit`}>作りに行く</a>
           </Button>
         </Card>
       ) : (

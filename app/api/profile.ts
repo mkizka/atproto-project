@@ -8,12 +8,16 @@ export const getProfile = (
   return ResultAsync.fromPromise(
     publicBskyAgent.getProfile(...args),
     () => new Error("Failed to get profile"),
-  ).map((response) => response.data);
+  )
+    .map((response) => response.data)
+    .unwrapOr(null);
 };
 
 export const getSessionProfile = () => {
   return ResultAsync.fromPromise(
     myAgent.getSessionProfile(),
     () => new Error("Failed to get profile"),
-  ).map((response) => response.data);
+  )
+    .map((response) => response.data)
+    .unwrapOr(null);
 };

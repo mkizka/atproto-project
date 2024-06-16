@@ -16,7 +16,8 @@ export const getBoard = (...args: Parameters<typeof myAgent.getBoard>) => {
     () => new Error("Failed to get board"),
   )
     .map((response) => response.value)
-    .andThen(parseBoard);
+    .andThen(parseBoard)
+    .unwrapOr(null);
 };
 
 export const getSessionBoard = () => {
@@ -25,5 +26,6 @@ export const getSessionBoard = () => {
     () => new Error("Failed to login"),
   )
     .map((response) => response.value)
-    .andThen(parseBoard);
+    .andThen(parseBoard)
+    .unwrapOr(null);
 };

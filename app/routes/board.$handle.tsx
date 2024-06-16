@@ -18,7 +18,8 @@ export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
 
 export default function Index() {
   const { profile, board } = useLoaderData<typeof clientLoader>();
-  return (
-    <Board profile={profile._unsafeUnwrap()} board={board._unsafeUnwrap()} />
-  );
+  if (!profile || !board) {
+    return <p>TODO: 404を返す</p>;
+  }
+  return <Board profile={profile} board={board} />;
 }

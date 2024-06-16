@@ -6,6 +6,7 @@ import type {
   DevMkizkaTestProfileBoard,
 } from "~/generated/api";
 import { AtpBaseClient } from "~/generated/api";
+import { env } from "~/utils/env";
 
 import type { BoardScheme } from "./validator";
 
@@ -119,9 +120,13 @@ class MyAgent {
 }
 
 export const myAgent = new MyAgent({
-  service: "https://bsky.social",
+  // TODO: ログイン時に指定できるようにする
+  service: "http://localhost:2583",
 });
 
 export const publicBskyAgent = new BskyAgent({
-  service: "https://public.api.bsky.app",
+  service:
+    env.NODE_ENV === "production"
+      ? "https://bsky.social"
+      : "http://localhost:2584",
 });
