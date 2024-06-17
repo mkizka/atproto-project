@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd atproto
-make deps
-make build
+if [ ! -d ./atproto/node_modules ]; then
+  cd atproto
+  make deps
+  make build
+  cd ..
+fi
