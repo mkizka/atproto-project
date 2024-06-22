@@ -3,6 +3,7 @@ import type { ServerBuild } from "@remix-run/node";
 import express from "express";
 
 import { createServer } from "./generated/server/index.js";
+import { FirehoseSubscription } from "./server/firehose/subscription.js";
 
 const viteDevServer =
   process.env.NODE_ENV === "production"
@@ -35,8 +36,13 @@ const build = viteDevServer
 
 app.all("*", createRequestHandler({ build: build as ServerBuild }));
 
-// TODO: Firehoseからボードを取得してSSRできるようにする
-// new FirehoseSubscription().run({ reconnectDelay: 1000 }).catch(console.error);
+const subscription = new FirehoseSubscription({
+  service: "http://localhost:2583",
+});
+subscription
+  .run({ reconnectDelay: 1000 })
+  // eslint-disable-next-line
+  .catch(console.error);
 
 const port = Number(process.env.PORT || 3000);
 

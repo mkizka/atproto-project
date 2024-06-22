@@ -16,6 +16,10 @@ export type FirehoseOperation = {
 
 export type RepoEvent = OutputSchema;
 
+type FirehoseSubscriptionBaseOptions = {
+  service: string;
+};
+
 type FirehoseRunOptions = {
   reconnectDelay: number;
 };
@@ -24,7 +28,7 @@ export abstract class FirehoseSubscriptionBase {
   public sub: Subscription<RepoEvent>;
   private cursor: number | null = null;
 
-  constructor(public service: string = "wss://bsky.network") {
+  constructor({ service }: FirehoseSubscriptionBaseOptions) {
     this.sub = new Subscription({
       service: service,
       method: ids.ComAtprotoSyncSubscribeRepos,
