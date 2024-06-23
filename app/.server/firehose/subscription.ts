@@ -1,8 +1,6 @@
-import type { Prisma } from "@prisma/client";
 import { err, ok, Result, ResultAsync } from "neverthrow";
 import { toValidationError } from "zod-validation-error";
 
-import { publicBskyAgent } from "~/api/agent";
 import type { BoardScheme } from "~/api/validator";
 import { boardScheme } from "~/api/validator";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
@@ -10,6 +8,7 @@ import { DevMkizkaTestProfileBoard } from "~/generated/api";
 import { prisma } from "../db/prisma";
 import type { FirehoseOperation, RepoEvent } from "./base";
 import { FirehoseSubscriptionBase } from "./base";
+import * as repository from "./repository";
 
 const checkIsBoard = (
   record: Record<string, unknown>,
@@ -22,64 +21,25 @@ const parseBoard = Result.fromThrowable(
   toValidationError(),
 );
 
-const createUserIfNotExists = async (
-  userDid: string,
-): Promise<Result<string, Error>> => {
-  const user = await prisma.user.findUnique({
-    where: {
-      did: userDid,
-    },
+const createBoard = async (userDid: string, board: BoardScheme) => {
+  return await prisma.$transaction(async (tx) => {
+    const user = await repository.findUser({ tx, userDid });
+    if (!user) {
+      const blueskyUser = await repository.getBlueskyProfile(userDid);
+      await repository.createUser({
+        tx,
+        userDid,
+        blueskyUser,
+      });
+    }
+    await repository.deleteAllCardsInBoard({ tx, userDid });
+    return await repository.upsertBoard({ tx, userDid, board });
   });
-  if (user) {
-    return ok(userDid);
-  }
-  const blueskyUser = await publicBskyAgent.getProfile({
-    actor: userDid,
-  });
-  if (!blueskyUser.success) {
-    return err(new Error("Blueskyからのユーザー取得に失敗しました"));
-  }
-  await prisma.user.create({
-    data: {
-      did: userDid,
-      description: blueskyUser.data.description,
-      displayName: blueskyUser.data.displayName,
-      handle: blueskyUser.data.handle,
-    },
-  });
-  return ok(userDid);
 };
 
-const createBoard = (userDid: string) =>
-  ResultAsync.fromThrowable(
-    async (board: BoardScheme) => {
-      const result = await createUserIfNotExists(userDid);
-      if (result.isErr()) {
-        throw result.error;
-      }
-      const data = {
-        user: {
-          connect: {
-            did: userDid,
-          },
-        },
-        cards: {
-          create: board.cards.map((card, index) => ({
-            url: card.url,
-            text: card.text,
-            order: index,
-          })),
-        },
-      } satisfies Prisma.BoardUpsertArgs["create"];
-      return await prisma.board.upsert({
-        where: {
-          userDid,
-        },
-        update: data,
-        create: data,
-      });
-    },
-    (e) => new Error("Failed to create board", { cause: e }),
+const safeCreateBoard = (userDid: string) =>
+  ResultAsync.fromThrowable((board: BoardScheme) =>
+    createBoard(userDid, board),
   );
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
@@ -87,7 +47,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
     for (const operation of operations) {
       void checkIsBoard(operation.record)
         .andThen(parseBoard)
-        .asyncAndThen(createBoard(operation.repo))
+        .asyncAndThen(safeCreateBoard(operation.repo))
         .match(
           (board) => {
             // eslint-disable-next-line no-console
