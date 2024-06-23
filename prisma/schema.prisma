@@ -15,10 +15,11 @@ datasource db {
 
 model User {
   did         String  @id
+  avatar      String?
   description String?
   displayName String?
-  handle      String
-  Board       Board[]
+  handle      String  @unique
+  board       Board?
 }
 
 model Card {
@@ -32,7 +33,7 @@ model Card {
 
 model Board {
   id        Int      @id @default(autoincrement())
-  userDid   String @unique
+  userDid   String   @unique
   user      User     @relation(fields: [userDid], references: [did])
   cards     Card[]
   createdAt DateTime @default(now())

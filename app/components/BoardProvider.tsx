@@ -1,25 +1,25 @@
 import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 
-import type { BoardScheme, CardScheme } from "~/api/validator";
+import type { ClientBoard, ClientCard } from "./types";
 
 type BoardContextValue = {
-  value: BoardScheme;
-  setCards: (cards: CardScheme[]) => void;
-  replaceCard: (card: CardScheme) => void;
-  addCard: (card: Omit<CardScheme, "id">) => void;
-  removeCard: (id: string) => void;
+  value: ClientBoard;
+  setCards: (cards: ClientCard[]) => void;
+  replaceCard: (card: ClientCard) => void;
+  addCard: (card: Omit<ClientCard, "id">) => void;
+  removeCard: (id: ClientCard["id"]) => void;
 };
 
 const BoardContext = createContext<BoardContextValue | null>(null);
 
 type Props = {
-  board: BoardScheme;
+  board: ClientBoard;
   children: ReactNode;
 };
 
 export function BoardProvider({ children, board }: Props) {
-  const [cards, setCards] = useState<CardScheme[]>(board.cards);
+  const [cards, setCards] = useState<ClientCard[]>(board.cards);
 
   const addCard: BoardContextValue["addCard"] = (card) => {
     const newCards = [...cards, { ...card, id: crypto.randomUUID() }];

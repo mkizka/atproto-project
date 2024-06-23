@@ -1,36 +1,45 @@
-import type { ClientLoaderFunctionArgs } from "@remix-run/react";
+import type { LoaderFunctionArgs } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
 import { useLayoutEffect } from "react";
 
-import { getSessionBoard } from "~/api/board";
-import { getSessionProfile } from "~/api/profile";
-import type { BoardScheme } from "~/api/validator";
 import { Board } from "~/components/Board";
+import { useSession } from "~/components/SessionProvider";
+import type { ClientBoard } from "~/components/types";
 
-export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
-  return {
-    profile: await getSessionProfile(),
-    board: await getSessionBoard(),
-  };
-}
+import { findProfileAndBoard } from "./shared";
 
 const defaultBoard = {
   cards: [],
-  createdAt: new Date().toISOString(),
-} satisfies BoardScheme;
+} satisfies ClientBoard;
+
+export async function loader({ params }: LoaderFunctionArgs) {
+  const result = await findProfileAndBoard(params.handle!);
+  if (!result) {
+    return json({
+      profile: null,
+      board: defaultBoard,
+    });
+  }
+  return json({
+    profile: result.profile,
+    board: result.board,
+  });
+}
 
 export default function Index() {
-  const { profile, board } = useLoaderData<typeof clientLoader>();
+  const { profile, board } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
+  const session = useSession();
 
   useLayoutEffect(() => {
-    if (!profile) {
+    if (!session.data) {
       navigate("/", { replace: true });
     }
-  }, [navigate, profile]);
+  }, [navigate, session.data]);
 
   if (!profile) {
     return null;
   }
-  return <Board profile={profile} board={board ?? defaultBoard} editable />;
+  return <Board profile={profile} board={board} editable />;
 }

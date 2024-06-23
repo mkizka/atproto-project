@@ -1,7 +1,6 @@
-import type { AppBskyActorDefs } from "@atproto/api";
+import type { Board, User } from "@prisma/client";
 import { Pencil } from "lucide-react";
 
-import type { BoardScheme } from "~/api/validator";
 import {
   Avatar,
   AvatarFallback,
@@ -15,6 +14,7 @@ import { SaveButton } from "./SaveButton";
 import { useSession } from "./SessionProvider";
 import { Button } from "./shadcn/ui/button";
 import { Sortable } from "./Sortable";
+import type { ClientBoard } from "./types";
 
 type Props = {
   className?: string;
@@ -32,7 +32,7 @@ function GotoEdit({ className }: Props) {
 }
 
 type BoardContentProps = {
-  profile: Pick<AppBskyActorDefs.ProfileViewDetailed, "avatar" | "handle">;
+  profile: Pick<User, "avatar" | "handle">;
   editable?: boolean;
 };
 
@@ -49,7 +49,7 @@ function BoardContent({ profile, editable }: BoardContentProps) {
       )}
       <section className="flex w-full justify-center py-4">
         <Avatar className="size-16">
-          <AvatarImage src={profile.avatar} />
+          <AvatarImage src={profile.avatar ?? undefined} />
           <AvatarFallback />
         </Avatar>
       </section>
@@ -62,7 +62,7 @@ function BoardContent({ profile, editable }: BoardContentProps) {
 }
 
 type BoardProps = {
-  board: BoardScheme;
+  board: ClientBoard;
 } & BoardContentProps;
 
 export function Board({ board, ...props }: BoardProps) {

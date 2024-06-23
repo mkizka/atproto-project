@@ -8,8 +8,12 @@
       "key": "literal:self",
       "record": {
         "type": "object",
-        "required": ["cards", "createdAt"],
+        "required": ["cards"],
         "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the board."
+          },
           "cards": {
             "type": "array",
             "description": "List of cards in the board.",
@@ -17,14 +21,6 @@
               "type": "union",
               "refs": ["#card"]
             }
-          },
-          "createdAt": {
-            "type": "string",
-            "description": "Creation date of the board."
-          },
-          "updatedAt": {
-            "type": "string",
-            "description": "Last update date of the board."
           }
         }
       }

@@ -1,13 +1,12 @@
 import type { AtpAgentLoginOpts, AtpSessionData } from "@atproto/api";
 import { BskyAgent } from "@atproto/api";
 
+import type { ClientBoard } from "~/components/types";
 import type {
   AtpServiceClient,
   DevMkizkaTestProfileBoard,
 } from "~/generated/api";
 import { AtpBaseClient } from "~/generated/api";
-
-import type { BoardScheme } from "./validator";
 
 const SESSION_STORAGE_KEY = "bluesky.session";
 
@@ -88,7 +87,7 @@ class MyAgent {
     });
   }
 
-  async updateBoard(board: BoardScheme) {
+  async updateBoard(board: ClientBoard) {
     if (!this.bskyAgent.session) {
       throw new Error("Not logged in");
     }
@@ -100,8 +99,10 @@ class MyAgent {
       rkey: "self",
       record: {
         ...board,
-        createdAt: board.createdAt ?? new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        cards: board.cards.map((card) => ({
+          $type: "dev.mkizka.test.profile.board#card",
+          ...card,
+        })),
       } satisfies DevMkizkaTestProfileBoard.Record,
     });
   }

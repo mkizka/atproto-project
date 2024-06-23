@@ -21,11 +21,13 @@ export default function Index() {
       <Board
         profile={{
           handle: "example.bsky.app",
+          avatar: null,
         }}
         board={{
           cards: [
             {
               id: "1",
+              text: null,
               url: "https://bsky.app/profile/did:plc:4gow62pk3vqpuwiwaslcwisa/post/3krfvqn7v2d2n",
             },
             {

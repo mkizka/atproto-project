@@ -50,7 +50,11 @@ export function ModalForm() {
   useLayoutEffect(() => {
     if (editingCard) {
       Object.entries(editingCard).forEach(([key, value]) => {
-        form.update({ name: key, value });
+        form.update({
+          name: key,
+          // フォームにはnullを渡せないが、ClientCard型はDBに合わせているためnullを持っている
+          value: value ?? undefined,
+        });
       });
     } else {
       form.reset();

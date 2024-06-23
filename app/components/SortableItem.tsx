@@ -4,7 +4,6 @@ import { LinkIcon, LoaderCircle, PencilLine, X } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { type FC, forwardRef, useState } from "react";
 
-import type { CardScheme } from "~/api/validator";
 import { cn } from "~/utils/cn";
 import {
   atUri,
@@ -23,6 +22,7 @@ import { useModal } from "./ModalProvider";
 import { Button } from "./shadcn/ui/button";
 import type { CardProps } from "./shadcn/ui/card";
 import { Card } from "./shadcn/ui/card";
+import type { ClientCard } from "./types";
 
 type CardIconComponent = FC<ComponentProps<"svg">>;
 
@@ -45,7 +45,7 @@ const cardIcons: Record<string, CardIconComponent | undefined> = {
   "github.com": GitHubIcon,
 };
 
-const parseCard = (card: CardScheme): ParsedCard => {
+const parseCard = (card: ClientCard): ParsedCard => {
   const url = new URL(card.url);
   const paths = url.pathname.split("/");
   if (isBlueskyPostUrl(url)) {
@@ -87,7 +87,7 @@ const parseCard = (card: CardScheme): ParsedCard => {
 };
 
 type ItemInnerProps = {
-  card: CardScheme;
+  card: ClientCard;
   editable?: boolean;
 };
 
@@ -119,7 +119,7 @@ function ItemInner({ card, editable }: ItemInnerProps) {
 }
 
 type ItemProps = {
-  card: CardScheme;
+  card: ClientCard;
   children?: ReactNode;
   editable?: boolean;
   isOverlay?: boolean;
@@ -193,7 +193,7 @@ export const Item = forwardRef<HTMLDivElement, ItemProps>(
 Item.displayName = "Item";
 
 export type SortableItemProps = {
-  card: CardScheme;
+  card: ClientCard;
   editable?: boolean;
 };
 

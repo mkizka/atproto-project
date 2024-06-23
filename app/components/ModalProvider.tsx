@@ -5,16 +5,16 @@ import type { ReactNode } from "react";
 import { createContext, useContext, useState } from "react";
 import { z } from "zod";
 
-import type { CardScheme } from "~/api/validator";
 import { resolveHandleIfNeeded } from "~/utils/urls";
 
 import { useBoard } from "./BoardProvider";
+import type { ClientCard } from "./types";
 
 type ModalContextValue = {
   formId: string;
-  editingCard: CardScheme | null;
+  editingCard: ClientCard | null;
   open: boolean;
-  setOpen: (open: boolean, cardId?: string) => void;
+  setOpen: (open: boolean, cardId?: ClientCard["id"]) => void;
 };
 
 const ModalContext = createContext<ModalContextValue | null>(null);
@@ -22,7 +22,7 @@ const ModalContext = createContext<ModalContextValue | null>(null);
 const schema = z
   .object({
     url: z.string().url({ message: "URLを入力してください" }),
-    text: z.string().optional(),
+    text: z.string().nullable(),
     id: z.string().optional(),
   })
   .refine(
@@ -51,7 +51,7 @@ const resolveHandle = ResultAsync.fromThrowable(
 
 export function ModalProvider({ children }: Props) {
   const [open, setOpen] = useState(false);
-  const [editingCard, setEditingCard] = useState<CardScheme | null>(null);
+  const [editingCard, setEditingCard] = useState<ClientCard | null>(null);
   const board = useBoard();
 
   const [form] = useForm<Schema>({
