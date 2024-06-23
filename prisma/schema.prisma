@@ -32,7 +32,7 @@ model Card {
 
 model Board {
   id        Int      @id @default(autoincrement())
-  userDid   String
+  userDid   String @unique
   user      User     @relation(fields: [userDid], references: [did])
   cards     Card[]
   createdAt DateTime @default(now())

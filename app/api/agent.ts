@@ -6,7 +6,6 @@ import type {
   DevMkizkaTestProfileBoard,
 } from "~/generated/api";
 import { AtpBaseClient } from "~/generated/api";
-import { env } from "~/utils/env";
 
 import type { BoardScheme } from "./validator";
 
@@ -125,8 +124,5 @@ export const myAgent = new MyAgent({
 });
 
 export const publicBskyAgent = new BskyAgent({
-  service:
-    env.NODE_ENV === "production"
-      ? "https://bsky.social"
-      : "http://localhost:2584",
+  service: "http://localhost:2584",
 });

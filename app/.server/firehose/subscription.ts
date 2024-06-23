@@ -1,3 +1,4 @@
+import type { Prisma } from "@prisma/client";
 import { err, ok, Result, ResultAsync } from "neverthrow";
 import { toValidationError } from "zod-validation-error";
 
@@ -35,7 +36,7 @@ const createUserIfNotExists = async (
   const blueskyUser = await publicBskyAgent.getProfile({
     actor: userDid,
   });
-  if (blueskyUser.success) {
+  if (!blueskyUser.success) {
     return err(new Error("Blueskyからのユーザー取得に失敗しました"));
   }
   await prisma.user.create({
@@ -56,20 +57,29 @@ const createBoard = (userDid: string) =>
       if (result.isErr()) {
         throw result.error;
       }
-      return await prisma.board.create({
-        data: {
-          userDid: userDid,
-          cards: {
-            create: board.cards.map((card, index) => ({
-              url: card.url,
-              text: card.text,
-              order: index,
-            })),
+      const data = {
+        user: {
+          connect: {
+            did: userDid,
           },
         },
+        cards: {
+          create: board.cards.map((card, index) => ({
+            url: card.url,
+            text: card.text,
+            order: index,
+          })),
+        },
+      } satisfies Prisma.BoardUpsertArgs["create"];
+      return await prisma.board.upsert({
+        where: {
+          userDid,
+        },
+        update: data,
+        create: data,
       });
     },
-    () => new Error("Failed to create board"),
+    (e) => new Error("Failed to create board", { cause: e }),
   );
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
@@ -86,7 +96,7 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
           (error) => {
             if (!error) return;
             // eslint-disable-next-line no-console
-            console.error(error.message);
+            console.error(error);
           },
         );
     }

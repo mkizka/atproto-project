@@ -7,3 +7,7 @@ if [ ! -d ./atproto/node_modules ]; then
   make build
   cd ..
 fi
+
+docker compose up -d --wait
+pnpm prisma db push
+pnpm run-p -l 'dev:*'

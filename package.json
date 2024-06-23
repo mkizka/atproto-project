@@ -8,16 +8,13 @@
   },
   "scripts": {
     "build": "remix vite:build",
-    "dev": "run-s setup-dev-env migrate dev-all",
-    "dev-all": "run-p -l dev:*",
+    "dev": "./scripts/dev.sh",
     "dev:atproto": "cd atproto && make run-dev-env",
-    "dev:docker": "docker compose up -d",
+    "dev:prisma": "prisma studio",
     "dev:remix": "NODE_ENV=development tsx watch --ignore vite.config.ts.* ./app/server.ts",
     "format": "eslint . --fix && prettier . --write",
-    "migrate": "prisma db push",
     "postinstall": "./scripts/postinstall.sh",
     "prepare": "husky",
-    "setup-dev-env": "./scripts/setup-dev-env.sh",
     "start": "NODE_ENV=production tsx ./app/server.ts",
     "typecheck": "tsc"
   },

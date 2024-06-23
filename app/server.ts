@@ -2,8 +2,8 @@ import { createRequestHandler } from "@remix-run/express";
 import type { ServerBuild } from "@remix-run/node";
 import express from "express";
 
+import { FirehoseSubscription } from "./.server/firehose/subscription.js";
 import { createServer } from "./generated/server/index.js";
-import { FirehoseSubscription } from "./server/firehose/subscription.js";
 
 const viteDevServer =
   process.env.NODE_ENV === "production"
