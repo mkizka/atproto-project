@@ -5,10 +5,9 @@ import type { BoardScheme } from "~/api/validator";
 import { boardScheme } from "~/api/validator";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
 
-import { prisma } from "../db/prisma";
+import { boardService } from "../db/boardService";
 import type { FirehoseOperation, RepoEvent } from "./base";
 import { FirehoseSubscriptionBase } from "./base";
-import * as repository from "./repository";
 
 const checkIsBoard = (
   record: Record<string, unknown>,
@@ -21,25 +20,9 @@ const parseBoard = Result.fromThrowable(
   toValidationError(),
 );
 
-const createBoard = async (userDid: string, board: BoardScheme) => {
-  return await prisma.$transaction(async (tx) => {
-    const user = await repository.findUser({ tx, userDid });
-    if (!user) {
-      const blueskyUser = await repository.getBlueskyProfile(userDid);
-      await repository.createUser({
-        tx,
-        userDid,
-        blueskyUser,
-      });
-    }
-    await repository.deleteAllCardsInBoard({ tx, userDid });
-    return await repository.upsertBoard({ tx, userDid, board });
-  });
-};
-
 const safeCreateBoard = (userDid: string) =>
   ResultAsync.fromThrowable((board: BoardScheme) =>
-    createBoard(userDid, board),
+    boardService.createBoard(userDid, board),
   );
 
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
