@@ -1,23 +1,24 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
+import { boardService } from "~/.server/db/boardService";
+import { userService } from "~/.server/db/userService";
 import { Board } from "~/components/Board";
 
-import { findProfileAndBoard } from "./shared";
-
 export async function loader({ params }: LoaderFunctionArgs) {
-  const result = await findProfileAndBoard(params.handle!);
-  if (!result) {
-    // eslint-disable-next-line @typescript-eslint/only-throw-error
-    throw new Response(null, {
-      status: 404,
-      statusText: "Not Found",
-    });
+  const handleOrDid = params.handle!;
+  const profile = await userService.findOrFetchUser({ handleOrDid });
+  if (!profile) {
+    return redirect("/");
+  }
+  const board = await boardService.findOrFetchBoard({ handleOrDid });
+  if (!board) {
+    return redirect("/");
   }
   return json({
-    profile: result.profile,
-    board: result.board,
+    profile,
+    board,
   });
 }
 

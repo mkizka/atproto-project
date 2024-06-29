@@ -21,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!profile) {
     return redirect("/");
   }
-  const board = await boardService.findBoard({ handleOrDid: base });
+  const board = await boardService.findOrFetchBoard({ handleOrDid: base });
   return json({
     profile,
     board: board ?? defaultBoard,

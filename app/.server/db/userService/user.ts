@@ -40,9 +40,10 @@ const createUser = async ({
   });
 };
 
-const fetchBlueskyProfile = async (actor: string) => {
+const fetchBlueskyProfile = async (handleOrDid: string) => {
+  logger.info("プロフィールを取得します", { actor: handleOrDid });
   const response = await publicBskyAgent.getProfile({
-    actor,
+    actor: handleOrDid,
   });
   if (!response.success) {
     return null;
