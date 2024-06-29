@@ -1,6 +1,9 @@
 import type { Prisma } from "@prisma/client";
+import { ResultAsync } from "neverthrow";
 
-export const deleteManyInBoard = async ({
+import { toPrismaError } from "~/.server/utils/errors";
+
+export const deleteManyInBoard = ({
   tx,
   handleOrDid,
 }: {
@@ -10,11 +13,14 @@ export const deleteManyInBoard = async ({
   const user = handleOrDid.startsWith("did:")
     ? { did: handleOrDid }
     : { handle: handleOrDid };
-  return await tx.card.deleteMany({
-    where: {
-      board: {
-        user,
+  return ResultAsync.fromPromise(
+    tx.card.deleteMany({
+      where: {
+        board: {
+          user,
+        },
       },
-    },
-  });
+    }),
+    toPrismaError,
+  );
 };

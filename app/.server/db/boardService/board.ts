@@ -1,5 +1,8 @@
 import type { Prisma } from "@prisma/client";
+import { Result, ResultAsync } from "neverthrow";
+import { toValidationError } from "zod-validation-error";
 
+import { isErrorOrNotNull, toPrismaError } from "~/.server/utils/errors";
 import { createLogger } from "~/.server/utils/logger";
 import { myAgent } from "~/api/agent";
 import { type BoardScheme, boardScheme } from "~/api/validator";
@@ -10,7 +13,7 @@ import { userService } from "../userService";
 
 const logger = createLogger("boardService");
 
-const upsertBoard = async ({
+const upsertBoard = ({
   tx,
   handleOrDid,
   board,
@@ -34,28 +37,30 @@ const upsertBoard = async ({
       })),
     },
   } satisfies Prisma.BoardUpsertArgs["create"];
-  return await tx.board.upsert({
+  const promise = tx.board.upsert({
     where: {
       userDid: handleOrDid,
     },
     update: data,
     create: data,
   });
+  return ResultAsync.fromPromise(promise, toPrismaError);
 };
 
-export const createBoard = async (handleOrDid: string, board: BoardScheme) => {
-  return await prisma.$transaction(async (tx) => {
-    await userService.findOrFetchUser({ tx, handleOrDid });
-    await cardService.deleteManyInBoard({ tx, handleOrDid });
-    return await upsertBoard({ tx, handleOrDid, board });
+export const createBoard = (handleOrDid: string, board: BoardScheme) => {
+  const promise = prisma.$transaction(async (tx) => {
+    (await userService.findOrFetchUser({ tx, handleOrDid }))._unsafeUnwrap();
+    (await cardService.deleteManyInBoard({ tx, handleOrDid }))._unsafeUnwrap();
+    return (await upsertBoard({ tx, handleOrDid, board }))._unsafeUnwrap();
   });
+  return ResultAsync.fromPromise(promise, toPrismaError);
 };
 
-const findBoard = async ({ handleOrDid }: { handleOrDid: string }) => {
+const findBoard = ({ handleOrDid }: { handleOrDid: string }) => {
   const user = handleOrDid.startsWith("did:")
     ? { did: handleOrDid }
     : { handle: handleOrDid };
-  return await prisma.board.findFirst({
+  const promise = prisma.board.findFirst({
     where: {
       user,
     },
@@ -67,18 +72,25 @@ const findBoard = async ({ handleOrDid }: { handleOrDid: string }) => {
       },
     },
   });
+  return ResultAsync.fromPromise(promise, toPrismaError);
 };
 
-const fetchBoardInPDS = async (handleOrDid: string) => {
-  logger.info("boardを取得します", { handleOrDid });
-  const response = await myAgent.getBoard({
+// eslint-disable-next-line @typescript-eslint/unbound-method
+const safeGetBoard = ResultAsync.fromThrowable(myAgent.getBoard);
+
+const safeParseBoard = Result.fromThrowable(
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  boardScheme.parse,
+  toValidationError(),
+);
+
+const fetchBoard = (handleOrDid: string) => {
+  logger.info("ボードを取得します", { actor: handleOrDid });
+  return safeGetBoard({
     repo: handleOrDid,
-  });
-  const parsed = boardScheme.safeParse(response.value);
-  if (!parsed.success) {
-    return null;
-  }
-  return parsed.data;
+  })
+    .andThen(safeParseBoard)
+    .andThen((board) => createBoard(handleOrDid, board));
 };
 
 export const findOrFetchBoard = async ({
@@ -87,16 +99,8 @@ export const findOrFetchBoard = async ({
   handleOrDid: string;
 }) => {
   const board = await findBoard({ handleOrDid });
-  if (board) {
+  if (isErrorOrNotNull(board)) {
     return board;
   }
-  const boardInPDS = await fetchBoardInPDS(handleOrDid);
-  if (!boardInPDS) {
-    return null;
-  }
-  const newBoard = await createBoard(handleOrDid, boardInPDS);
-  return {
-    ...newBoard,
-    cards: [],
-  };
+  return fetchBoard(handleOrDid);
 };
