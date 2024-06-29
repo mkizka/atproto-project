@@ -2,15 +2,18 @@ import type { Prisma } from "@prisma/client";
 
 export const deleteManyInBoard = async ({
   tx,
-  userDid,
+  handleOrDid,
 }: {
   tx: Prisma.TransactionClient;
-  userDid: string;
+  handleOrDid: string;
 }) => {
+  const user = handleOrDid.startsWith("did:")
+    ? { did: handleOrDid }
+    : { handle: handleOrDid };
   return await tx.card.deleteMany({
     where: {
       board: {
-        userDid,
+        user,
       },
     },
   });

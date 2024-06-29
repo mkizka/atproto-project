@@ -1,45 +1,34 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { useLoaderData, useNavigate } from "@remix-run/react";
-import { useLayoutEffect } from "react";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
+import { boardService } from "~/.server/db/boardService";
+import { userService } from "~/.server/db/userService";
 import { Board } from "~/components/Board";
-import { useSession } from "~/components/SessionProvider";
 import type { ClientBoard } from "~/components/types";
 
-import { findProfileAndBoard } from "./shared";
-
-const defaultBoard = {
+const defaultBoard: ClientBoard = {
   cards: [],
-} satisfies ClientBoard;
+};
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const result = await findProfileAndBoard(params.handle!);
-  if (!result) {
-    return json({
-      profile: null,
-      board: defaultBoard,
-    });
+export async function loader({ request }: LoaderFunctionArgs) {
+  const url = new URL(request.url);
+  const base = url.searchParams.get("base");
+  if (!base) {
+    return redirect("/");
   }
+  const profile = await userService.findOrFetchUser({ handleOrDid: base });
+  if (!profile) {
+    return redirect("/");
+  }
+  const board = await boardService.findBoard({ handleOrDid: base });
   return json({
-    profile: result.profile,
-    board: result.board,
+    profile,
+    board: board ?? defaultBoard,
   });
 }
 
 export default function Index() {
   const { profile, board } = useLoaderData<typeof loader>();
-  const navigate = useNavigate();
-  const session = useSession();
-
-  useLayoutEffect(() => {
-    if (!session.data) {
-      navigate("/", { replace: true });
-    }
-  }, [navigate, session.data]);
-
-  if (!profile) {
-    return null;
-  }
-  return <Board profile={profile} board={board} editable />;
+  return <Board user={profile} board={board} editable />;
 }

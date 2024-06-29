@@ -19,7 +19,7 @@ export default function Index() {
   return (
     <div className="grid gap-8">
       <Board
-        profile={{
+        user={{
           handle: "example.bsky.app",
           avatar: null,
         }}
@@ -50,7 +50,7 @@ export default function Index() {
       {session.data ? (
         <Card className="flex justify-center p-8">
           <Button size="lg" asChild>
-            <a href={`/edit`}>作りに行く</a>
+            <a href={`/edit?base=${session.data.handle}`}>作りに行く</a>
           </Button>
         </Card>
       ) : (

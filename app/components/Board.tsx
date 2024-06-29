@@ -1,4 +1,4 @@
-import type { Board, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { Pencil } from "lucide-react";
 
 import {
@@ -31,14 +31,11 @@ function GotoEdit({ className }: Props) {
   );
 }
 
-type BoardContentProps = {
-  profile: Pick<User, "avatar" | "handle">;
-  editable?: boolean;
-};
+type BoardContentProps = Omit<BoardProps, "board">;
 
-function BoardContent({ profile, editable }: BoardContentProps) {
+function BoardContent({ user, editable }: BoardContentProps) {
   const session = useSession();
-  const isMine = session.data && session.data.handle === profile.handle;
+  const isMine = session.data && session.data.handle === user.handle;
   return (
     <div className="relative flex flex-col gap-2">
       {isMine && editable && (
@@ -49,7 +46,7 @@ function BoardContent({ profile, editable }: BoardContentProps) {
       )}
       <section className="flex w-full justify-center py-4">
         <Avatar className="size-16">
-          <AvatarImage src={profile.avatar ?? undefined} />
+          <AvatarImage src={user.avatar ?? undefined} />
           <AvatarFallback />
         </Avatar>
       </section>
@@ -62,8 +59,10 @@ function BoardContent({ profile, editable }: BoardContentProps) {
 }
 
 type BoardProps = {
+  user: Pick<User, "avatar" | "handle">;
   board: ClientBoard;
-} & BoardContentProps;
+  editable?: boolean;
+};
 
 export function Board({ board, ...props }: BoardProps) {
   return (

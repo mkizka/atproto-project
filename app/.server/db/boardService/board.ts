@@ -8,18 +8,19 @@ import { userService } from "../userService";
 
 const upsertBoard = async ({
   tx,
-  userDid,
+  handleOrDid,
   board,
 }: {
   tx: Prisma.TransactionClient;
-  userDid: string;
+  handleOrDid: string;
   board: BoardScheme;
 }) => {
+  const connect = handleOrDid.startsWith("did:")
+    ? { did: handleOrDid }
+    : { handle: handleOrDid };
   const data = {
     user: {
-      connect: {
-        did: userDid,
-      },
+      connect,
     },
     cards: {
       create: board.cards.map((card, index) => ({
@@ -31,17 +32,35 @@ const upsertBoard = async ({
   } satisfies Prisma.BoardUpsertArgs["create"];
   return await tx.board.upsert({
     where: {
-      userDid,
+      userDid: handleOrDid,
     },
     update: data,
     create: data,
   });
 };
 
-export const createBoard = async (userDid: string, board: BoardScheme) => {
+export const createBoard = async (handleOrDid: string, board: BoardScheme) => {
   return await prisma.$transaction(async (tx) => {
-    await userService.findOrFetchUser({ tx, userDid });
-    await cardService.deleteManyInBoard({ tx, userDid });
-    return await upsertBoard({ tx, userDid, board });
+    await userService.findOrFetchUser({ tx, handleOrDid });
+    await cardService.deleteManyInBoard({ tx, handleOrDid });
+    return await upsertBoard({ tx, handleOrDid, board });
+  });
+};
+
+export const findBoard = async ({ handleOrDid }: { handleOrDid: string }) => {
+  const user = handleOrDid.startsWith("did:")
+    ? { did: handleOrDid }
+    : { handle: handleOrDid };
+  return await prisma.board.findFirst({
+    where: {
+      user,
+    },
+    include: {
+      cards: {
+        orderBy: {
+          order: "asc",
+        },
+      },
+    },
   });
 };

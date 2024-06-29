@@ -23,5 +23,5 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
 export default function Index() {
   const { profile, board } = useLoaderData<typeof loader>();
-  return <Board profile={profile} board={board} />;
+  return <Board user={profile} board={board} />;
 }

@@ -1,68 +1,73 @@
 import type { AppBskyActorDefs } from "@atproto/api";
 import type { Prisma } from "@prisma/client";
 
+import { createLogger } from "~/.server/utils/logger";
 import { publicBskyAgent } from "~/api/agent";
 
 import { prisma } from "../prisma";
 
+const logger = createLogger("userService");
+
 const findUser = async ({
   tx,
-  userDid,
+  handleOrDid,
 }: {
   tx: Prisma.TransactionClient;
-  userDid: string;
+  handleOrDid: string;
 }) => {
+  const where = handleOrDid.startsWith("did:")
+    ? { did: handleOrDid }
+    : { handle: handleOrDid };
   return await tx.user.findUnique({
-    where: {
-      did: userDid,
-    },
+    where,
   });
 };
 
 const createUser = async ({
   tx,
-  userDid,
-  blueskyUser,
+  blueskyProfile,
 }: {
   tx: Prisma.TransactionClient;
-  userDid: string;
-  blueskyUser: AppBskyActorDefs.ProfileViewDetailed;
+  blueskyProfile: AppBskyActorDefs.ProfileViewDetailed;
 }) => {
   return await tx.user.create({
     data: {
-      did: userDid,
-      description: blueskyUser.description,
-      displayName: blueskyUser.displayName,
-      handle: blueskyUser.handle,
+      did: blueskyProfile.did,
+      description: blueskyProfile.description,
+      displayName: blueskyProfile.displayName,
+      handle: blueskyProfile.handle,
     },
   });
 };
 
-const fetchBlueskyUser = async (userDid: string) => {
+const fetchBlueskyProfile = async (actor: string) => {
   const response = await publicBskyAgent.getProfile({
-    actor: userDid,
+    actor,
   });
   if (!response.success) {
-    throw new Error("Blueskyからのユーザー取得に失敗しました");
+    return null;
   }
   return response.data;
 };
 
 export const findOrFetchUser = async ({
   tx = prisma,
-  userDid,
+  handleOrDid,
 }: {
-  tx: Prisma.TransactionClient;
-  userDid: string;
+  tx?: Prisma.TransactionClient;
+  handleOrDid: string;
 }) => {
-  const user = await findUser({ tx, userDid });
+  const user = await findUser({ tx, handleOrDid });
   if (user) {
     return user;
   }
-  const blueskyUser = await fetchBlueskyUser(userDid);
+  const blueskyProfile = await fetchBlueskyProfile(handleOrDid);
+  if (!blueskyProfile) {
+    logger.warn("プロフィールの取得に失敗しました");
+    return null;
+  }
   return await createUser({
     tx,
-    userDid,
-    blueskyUser,
+    blueskyProfile,
   });
 };
