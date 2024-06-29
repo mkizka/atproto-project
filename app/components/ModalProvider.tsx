@@ -22,7 +22,7 @@ const ModalContext = createContext<ModalContextValue | null>(null);
 const schema = z
   .object({
     url: z.string().url({ message: "URLを入力してください" }),
-    text: z.string().nullable(),
+    text: z.string().optional(),
     id: z.string().optional(),
   })
   .refine(
@@ -69,9 +69,16 @@ export function ModalProvider({ children }: Props) {
         return;
       }
       if (resolvedCard.value.id) {
-        board.replaceCard({ ...resolvedCard.value, id: resolvedCard.value.id });
+        board.replaceCard({
+          ...resolvedCard.value,
+          id: resolvedCard.value.id,
+          text: resolvedCard.value.text ?? null,
+        });
       } else {
-        board.addCard(resolvedCard.value);
+        board.addCard({
+          ...resolvedCard.value,
+          text: resolvedCard.value.text ?? null,
+        });
       }
       setOpen(false);
     },
