@@ -28,21 +28,26 @@ const findUser = ({
   );
 };
 
-const createUser = ({
+const upsertUser = ({
   tx,
   blueskyProfile,
 }: {
   tx: Prisma.TransactionClient;
   blueskyProfile: AppBskyActorDefs.ProfileViewDetailed;
 }) => {
+  const data = {
+    did: blueskyProfile.did,
+    description: blueskyProfile.description,
+    displayName: blueskyProfile.displayName,
+    handle: blueskyProfile.handle,
+  };
   return ResultAsync.fromPromise(
-    tx.user.create({
-      data: {
+    tx.user.upsert({
+      where: {
         did: blueskyProfile.did,
-        description: blueskyProfile.description,
-        displayName: blueskyProfile.displayName,
-        handle: blueskyProfile.handle,
       },
+      update: data,
+      create: data,
     }),
     toPrismaError,
   );
@@ -75,7 +80,7 @@ const fetchUser = ({
     if (!blueskyProfile) {
       return okAsync(null);
     }
-    return createUser({
+    return upsertUser({
       tx,
       blueskyProfile: blueskyProfile.data,
     });

@@ -21,9 +21,10 @@ type Props = {
 };
 
 function GotoEdit({ className }: Props) {
+  const session = useSession();
   return (
     <Button className={className} asChild>
-      <a href="/edit">
+      <a href={`/edit?base=${session.data?.handle}`}>
         <Pencil className="size-4" />
         編集画面に行く
       </a>

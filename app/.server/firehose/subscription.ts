@@ -17,12 +17,14 @@ export class FirehoseSubscription extends FirehoseSubscriptionBase {
   handle(operations: FirehoseOperation[], event: RepoEvent) {
     for (const operation of operations) {
       void checkIsBoard(operation.record)
-        .asyncAndThen((board) =>
-          boardService.parseAndCreateBoard({
+        .asyncAndThen((board) => {
+          // eslint-disable-next-line no-console
+          console.log("operation", JSON.stringify(operation));
+          return boardService.parseAndCreateBoard({
             handleOrDid: operation.repo,
             board,
-          }),
-        )
+          });
+        })
         .match(
           (board) => {
             // eslint-disable-next-line no-console

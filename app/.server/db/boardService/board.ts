@@ -44,8 +44,15 @@ const upsertBoard = ({
     },
     update: data,
     create: data,
+    include: {
+      user: true,
+      cards: true,
+    },
   });
-  return ResultAsync.fromPromise(promise, toPrismaError);
+  return ResultAsync.fromPromise(promise, toPrismaError).map((board) => ({
+    ...board,
+    cards: board.cards.sort((a, b) => a.order - b.order),
+  }));
 };
 
 const safeParseBoard = Result.fromThrowable(
@@ -62,9 +69,7 @@ const createBoard = (handleOrDid: string) => (board: BoardScheme) => {
       .andThen(() => cardService.deleteManyInBoard({ tx, handleOrDid }))
       .andThen(() => upsertBoard({ tx, handleOrDid, board }))
       .match(
-        (value) => {
-          return { ...value, cards: [] };
-        },
+        (value) => value,
         (error) => {
           throw error;
         },
@@ -92,6 +97,7 @@ const findBoard = ({ handleOrDid }: { handleOrDid: string }) => {
       user,
     },
     include: {
+      user: true,
       cards: {
         orderBy: {
           order: "asc",

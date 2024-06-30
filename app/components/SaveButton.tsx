@@ -21,7 +21,7 @@ export function SaveButton({ className }: Props) {
   const handleSave = async () => {
     if (!session.data) throw new Error("セッションがありません");
     setIsSaving(true);
-    await myAgent.updateBoard(board.value);
+    await myAgent.updateBoard({ cards: board.value.cards });
     navigate(`/board/${session.data.handle}`);
   };
 
