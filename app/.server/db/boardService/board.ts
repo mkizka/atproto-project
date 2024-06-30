@@ -1,11 +1,12 @@
 import type { Prisma } from "@prisma/client";
-import { Result, ResultAsync } from "neverthrow";
+import { ok, okAsync, Result, ResultAsync } from "neverthrow";
 import { toValidationError } from "zod-validation-error";
 
-import { isErrorOrNotNull, toPrismaError } from "~/.server/utils/errors";
 import { createLogger } from "~/.server/utils/logger";
+import { toPrismaError, toXRPCError } from "~/.server/utils/neverthrow";
 import { myAgent } from "~/api/agent";
 import { type BoardScheme, boardScheme } from "~/api/validator";
+import type { DevMkizkaTestProfileBoard } from "~/generated/api";
 
 import { cardService } from "../cardService";
 import { prisma } from "../prisma";
@@ -47,13 +48,39 @@ const upsertBoard = ({
   return ResultAsync.fromPromise(promise, toPrismaError);
 };
 
-export const createBoard = (handleOrDid: string, board: BoardScheme) => {
-  const promise = prisma.$transaction(async (tx) => {
-    (await userService.findOrFetchUser({ tx, handleOrDid }))._unsafeUnwrap();
-    (await cardService.deleteManyInBoard({ tx, handleOrDid }))._unsafeUnwrap();
-    return (await upsertBoard({ tx, handleOrDid, board }))._unsafeUnwrap();
+const safeParseBoard = Result.fromThrowable(
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  boardScheme.parse,
+  toValidationError(),
+);
+
+const createBoard = (handleOrDid: string) => (board: BoardScheme) => {
+  const promise = prisma.$transaction((tx) => {
+    return userService
+      .findOrFetchUser({ tx, handleOrDid })
+      .andThen(() => userService.findOrFetchUser({ tx, handleOrDid }))
+      .andThen(() => cardService.deleteManyInBoard({ tx, handleOrDid }))
+      .andThen(() => upsertBoard({ tx, handleOrDid, board }))
+      .match(
+        (value) => {
+          return { ...value, cards: [] };
+        },
+        (error) => {
+          throw error;
+        },
+      );
   });
   return ResultAsync.fromPromise(promise, toPrismaError);
+};
+
+export const parseAndCreateBoard = ({
+  handleOrDid,
+  board,
+}: {
+  handleOrDid: string;
+  board: DevMkizkaTestProfileBoard.Record;
+}) => {
+  return safeParseBoard(board).asyncAndThen(createBoard(handleOrDid));
 };
 
 const findBoard = ({ handleOrDid }: { handleOrDid: string }) => {
@@ -75,32 +102,32 @@ const findBoard = ({ handleOrDid }: { handleOrDid: string }) => {
   return ResultAsync.fromPromise(promise, toPrismaError);
 };
 
-// eslint-disable-next-line @typescript-eslint/unbound-method
-const safeGetBoard = ResultAsync.fromThrowable(myAgent.getBoard);
-
-const safeParseBoard = Result.fromThrowable(
-  // eslint-disable-next-line @typescript-eslint/unbound-method
-  boardScheme.parse,
-  toValidationError(),
-);
+const safeGetBoard = (handleOrDid: string) => {
+  const promise = ResultAsync.fromPromise(
+    myAgent.getBoard({ repo: handleOrDid }),
+    toXRPCError,
+  )
+    .mapErr((error) => {
+      logger.warn("ボードの取得に失敗しました", {
+        error,
+      });
+      return error;
+    })
+    .unwrapOr(null);
+  return ResultAsync.fromSafePromise(promise);
+};
 
 const fetchBoard = (handleOrDid: string) => {
   logger.info("ボードを取得します", { actor: handleOrDid });
-  return safeGetBoard({
-    repo: handleOrDid,
-  })
-    .andThen(safeParseBoard)
-    .andThen((board) => createBoard(handleOrDid, board));
+  return safeGetBoard(handleOrDid).andThen((board) => {
+    if (!board) return okAsync(null);
+    return parseAndCreateBoard({ handleOrDid, board: board.value });
+  });
 };
 
-export const findOrFetchBoard = async ({
-  handleOrDid,
-}: {
-  handleOrDid: string;
-}) => {
-  const board = await findBoard({ handleOrDid });
-  if (isErrorOrNotNull(board)) {
-    return board;
-  }
-  return fetchBoard(handleOrDid);
+export const findOrFetchBoard = ({ handleOrDid }: { handleOrDid: string }) => {
+  return findBoard({ handleOrDid }).andThen((board) => {
+    if (board) return ok(board);
+    return fetchBoard(handleOrDid);
+  });
 };

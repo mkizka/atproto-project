@@ -1,10 +1,9 @@
 import type { AppBskyActorDefs } from "@atproto/api";
-import type { Prisma, User } from "@prisma/client";
-import type { Result } from "neverthrow";
-import { ok, ResultAsync } from "neverthrow";
+import type { Prisma } from "@prisma/client";
+import { okAsync, ResultAsync } from "neverthrow";
 
-import { isErrorOrNotNull, toPrismaError } from "~/.server/utils/errors";
 import { createLogger } from "~/.server/utils/logger";
+import { toPrismaError, toXRPCError } from "~/.server/utils/neverthrow";
 import { publicBskyAgent } from "~/api/agent";
 
 import { prisma } from "../prisma";
@@ -49,9 +48,22 @@ const createUser = ({
   );
 };
 
-const safeGetProfile = ResultAsync.fromThrowable(publicBskyAgent.getProfile);
+const safeGetProfile = (handleOrDid: string) => {
+  const promise = ResultAsync.fromPromise(
+    publicBskyAgent.getProfile({ actor: handleOrDid }),
+    toXRPCError,
+  )
+    .mapErr((error) => {
+      logger.warn("プロフィールの取得に失敗しました", {
+        error,
+      });
+      return error;
+    })
+    .unwrapOr(null);
+  return ResultAsync.fromSafePromise(promise);
+};
 
-const fetchUser = async ({
+const fetchUser = ({
   tx,
   handleOrDid,
 }: {
@@ -59,31 +71,28 @@ const fetchUser = async ({
   handleOrDid: string;
 }) => {
   logger.info("プロフィールを取得します", { actor: handleOrDid });
-  const blueskyProfile = await safeGetProfile({
-    actor: handleOrDid,
-  });
-  if (blueskyProfile.isErr()) {
-    logger.warn("プロフィールの取得に失敗しました", {
-      error: blueskyProfile.error,
+  return safeGetProfile(handleOrDid).andThen((blueskyProfile) => {
+    if (!blueskyProfile) {
+      return okAsync(null);
+    }
+    return createUser({
+      tx,
+      blueskyProfile: blueskyProfile.data,
     });
-    return ok(null);
-  }
-  return await createUser({
-    tx,
-    blueskyProfile: blueskyProfile.value.data,
   });
 };
 
-export const findOrFetchUser = async ({
+export const findOrFetchUser = ({
   tx = prisma,
   handleOrDid,
 }: {
   tx?: Prisma.TransactionClient;
   handleOrDid: string;
-}): Promise<Result<User | null, Error>> => {
-  const user = await findUser({ tx, handleOrDid });
-  if (isErrorOrNotNull(user)) {
-    return user;
-  }
-  return fetchUser({ tx, handleOrDid });
+}) => {
+  return findUser({ tx, handleOrDid }).andThen((user) => {
+    if (user) {
+      return okAsync(user);
+    }
+    return fetchUser({ tx, handleOrDid });
+  });
 };

@@ -1,8 +1,6 @@
-import { err, ok, Result, ResultAsync } from "neverthrow";
-import { toValidationError } from "zod-validation-error";
+import type { Result } from "neverthrow";
+import { err, ok } from "neverthrow";
 
-import type { BoardScheme } from "~/api/validator";
-import { boardScheme } from "~/api/validator";
 import { DevMkizkaTestProfileBoard } from "~/generated/api";
 
 import { boardService } from "../db/boardService";
@@ -15,22 +13,16 @@ const checkIsBoard = (
   return DevMkizkaTestProfileBoard.isRecord(record) ? ok(record) : err(null);
 };
 
-const parseBoard = Result.fromThrowable(
-  (record: DevMkizkaTestProfileBoard.Record) => boardScheme.parse(record),
-  toValidationError(),
-);
-
-const safeCreateBoard = (userDid: string) =>
-  ResultAsync.fromThrowable((board: BoardScheme) =>
-    boardService.createBoard(userDid, board),
-  );
-
 export class FirehoseSubscription extends FirehoseSubscriptionBase {
   handle(operations: FirehoseOperation[], event: RepoEvent) {
     for (const operation of operations) {
       void checkIsBoard(operation.record)
-        .andThen(parseBoard)
-        .asyncAndThen(safeCreateBoard(operation.repo))
+        .asyncAndThen((board) =>
+          boardService.parseAndCreateBoard({
+            handleOrDid: operation.repo,
+            board,
+          }),
+        )
         .match(
           (board) => {
             // eslint-disable-next-line no-console

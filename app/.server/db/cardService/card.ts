@@ -1,7 +1,7 @@
 import type { Prisma } from "@prisma/client";
 import { ResultAsync } from "neverthrow";
 
-import { toPrismaError } from "~/.server/utils/errors";
+import { toPrismaError } from "~/.server/utils/neverthrow";
 
 export const deleteManyInBoard = ({
   tx,

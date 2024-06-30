@@ -4,6 +4,8 @@ import { useLoaderData } from "@remix-run/react";
 
 import { boardService } from "~/.server/db/boardService";
 import { userService } from "~/.server/db/userService";
+import { createLogger } from "~/.server/utils/logger";
+import { tap } from "~/.server/utils/neverthrow";
 import { Board } from "~/components/Board";
 import type { ClientBoard } from "~/components/types";
 
@@ -11,20 +13,31 @@ const defaultBoard: ClientBoard = {
   cards: [],
 };
 
+const logger = createLogger("/edit");
+
 export async function loader({ request }: LoaderFunctionArgs) {
   const url = new URL(request.url);
-  const base = url.searchParams.get("base");
-  if (!base) {
+  const handleOrDid = url.searchParams.get("base");
+  if (!handleOrDid) {
     return redirect("/");
   }
-  const profile = await userService.findOrFetchUser({ handleOrDid: base });
-  if (!profile) {
-    return redirect("/");
+  const profile = await userService.findOrFetchUser({ handleOrDid });
+  if (profile.isErr() || profile.value === null) {
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
+    throw new Response(null, {
+      status: 404,
+      statusText: "Not Found",
+    });
   }
-  const board = await boardService.findOrFetchBoard({ handleOrDid: base });
+  const board = await boardService
+    .findOrFetchBoard({ handleOrDid })
+    .mapErr(
+      tap((error) => logger.error("boardService.findOrFetchBoard", { error })),
+    )
+    .map((board) => board ?? defaultBoard);
   return json({
-    profile,
-    board: board ?? defaultBoard,
+    board: board.unwrapOr(defaultBoard),
+    profile: profile.value,
   });
 }
 
