@@ -13,6 +13,7 @@
     "dev:prisma": "prisma studio",
     "dev:remix": "NODE_ENV=development dotenv -- tsx watch --ignore vite.config.ts.* ./app/server.ts",
     "format": "eslint . --fix && prettier . --write",
+    "lint": "eslint . && prettier . --check",
     "postinstall": "./scripts/postinstall.sh",
     "prepare": "husky",
     "start": "NODE_ENV=production tsx ./app/server.ts",
