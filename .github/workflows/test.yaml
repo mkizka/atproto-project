@@ -16,5 +16,6 @@ jobs:
           node-version-file: .tool-versions
           cache: pnpm
       - run: pnpm i
+      - run: pnpm build
       - run: pnpm lint
       - run: pnpm test
