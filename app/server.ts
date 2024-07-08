@@ -30,12 +30,9 @@ server.dev.mkizka.sample.sampleMethod(() => {
 });
 app.use(server.xrpc.router);
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 const build = viteDevServer
   ? () => viteDevServer.ssrLoadModule("virtual:remix/server-build")
-  : // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error, @typescript-eslint/ban-ts-comment
-    // @ts-ignore: ビルド結果がない場合でもlintを通したいので無視する
-    await import("../build/server/index.js");
+  : await import("../build/server/index.js");
 
 app.all("*", createRequestHandler({ build: build as ServerBuild }));
 
