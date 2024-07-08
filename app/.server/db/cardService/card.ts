@@ -1,10 +1,12 @@
 import type { Prisma } from "@prisma/client";
 
+import { prisma } from "../prisma";
+
 export const deleteManyInBoard = async ({
-  tx,
+  tx = prisma,
   handleOrDid,
 }: {
-  tx: Prisma.TransactionClient;
+  tx?: Prisma.TransactionClient;
   handleOrDid: string;
 }) => {
   const user = handleOrDid.startsWith("did:")
