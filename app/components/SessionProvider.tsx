@@ -27,8 +27,10 @@ export function SessionProvider({ children }: Props) {
 
   const login = async (options: AtpAgentLoginOpts) => {
     const response = await myAgent.login(options);
-    setData(response.data);
-    return response.data;
+    // なぜか途中からAtpSessionDataのactiveのみ型が合わなくなった
+    const session = response.data as AtpSessionData;
+    setData(session);
+    return session;
   };
 
   return (
