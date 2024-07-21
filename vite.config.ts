@@ -9,9 +9,9 @@ installGlobals();
 export default defineConfig({
   plugins: [remix(), tsconfigPaths()],
   test: {
-    include: ["app/**/*.spec.ts?(x)"],
+    include: ["app/**/*.spec.ts"],
     coverage: {
-      include: ["app/**/*.ts?(x)"],
+      include: ["app/**/*.ts"],
       exclude: ["app/generated"],
     },
     // vitest-environment-vprisma
