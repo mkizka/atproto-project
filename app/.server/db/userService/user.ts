@@ -3,6 +3,7 @@ import type { Prisma } from "@prisma/client";
 
 import { createLogger } from "~/.server/utils/logger";
 import { publicBskyAgent } from "~/api/agent";
+import { tryCatch } from "~/utils/tryCatch";
 
 import { prisma } from "../prisma";
 
@@ -45,9 +46,6 @@ const fetchBlueskyProfile = async (handleOrDid: string) => {
   const response = await publicBskyAgent.getProfile({
     actor: handleOrDid,
   });
-  if (!response.success) {
-    return null;
-  }
   return response.data;
 };
 
@@ -62,9 +60,9 @@ export const findOrFetchUser = async ({
   if (user) {
     return user;
   }
-  const blueskyProfile = await fetchBlueskyProfile(handleOrDid);
-  if (!blueskyProfile) {
-    logger.warn("プロフィールの取得に失敗しました");
+  const blueskyProfile = await tryCatch(fetchBlueskyProfile)(handleOrDid);
+  if (blueskyProfile instanceof Error) {
+    logger.warn("プロフィールの取得に失敗しました", { error: blueskyProfile });
     return null;
   }
   return await createUser({
