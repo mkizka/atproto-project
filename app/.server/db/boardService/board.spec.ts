@@ -17,17 +17,10 @@ const dummyBoard: BoardScheme = {
   ],
 };
 
-const mockedNow = new Date("2024-01-01T00:00:00.000Z");
-
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
 describe("boardService", () => {
   describe("createBoard", () => {
     test("ボードを作成できる", async () => {
       // arrange
-      vi.setSystemTime(mockedNow);
       const user = await UserFactory.create(); // findOrFetchUserが作成するユーザー
       // act
       const actual = await boardService.createBoard(user.did, dummyBoard);
